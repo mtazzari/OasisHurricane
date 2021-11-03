@@ -12,7 +12,7 @@ from .logs import LOGGING
 logging.config.dictConfig(LOGGING)
 logger = logging.getLogger("cli")
 
-from .model import simulate
+from .model import Simulator
 
 
 def parse_args():
@@ -54,12 +54,14 @@ def parse_args():
                         type=int,
                         dest="num_monte_carlo_samples",
                         default=10)
+    parser.add_argument("-s", "--simulator",
+                        action="store",
+                        help="",
+                        type=int,
+                        dest="simulator_id",
+                        default=0)
 
     args = parser.parse_args()
-
-    # TODO: input checking/validation
-
-    # TODO: logging
 
     return args
 
@@ -101,7 +103,8 @@ def main():
 
     validated_args = validate_args(args)
 
-    simulate(**validated_args)
+    sim = Simulator(args.simulator_id)
+    sim.simulate(**validated_args)
 
     sys.exit(0)
 
