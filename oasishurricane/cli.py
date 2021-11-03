@@ -10,7 +10,7 @@ import logging.config
 from .logs import LOGGING
 
 logging.config.dictConfig(LOGGING)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("cli")
 
 from .model import simulate
 
@@ -88,6 +88,10 @@ def validate_args(args):
         "gulf_stddev": args.gulf_stddev,
         "num_monte_carlo_samples": args.num_monte_carlo_samples,
     }
+
+    logger.info("Validated parameters: ")
+    for arg_k, arg_v in validated_args.items():
+        logger.info(f"{arg_k:>30s} = {arg_v:>10.5f}")
 
     return validated_args
 
