@@ -13,6 +13,10 @@ setup(
     author_email="marco.tazzari@gmail.com",
     description="A command-line utility",
     long_description=open('README.md').read(),
+    entry_points='''
+        [console_scripts]
+        gethurricaneloss=oasishurricane.cli:main
+    ''',
     install_requires=[line.rstrip() for line in open("requirements.txt", "r").readlines()],
     license="BSD-3",
     url="tbd",
