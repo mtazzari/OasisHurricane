@@ -148,4 +148,6 @@ class Simulator(object):
             self.simulate = simulate_pbar
         elif simulator_id == 1:
             self.simulate = simulate
+        else:
+            raise NotImplementedError(f"simulator_id={simulator_id} is not implemented")
 

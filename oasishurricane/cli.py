@@ -4,6 +4,7 @@
 import sys
 import argparse
 import numpy as np
+import copy
 import logging
 import logging.config
 
@@ -61,7 +62,7 @@ def parse_args():
                         dest="simulator_id",
                         default=0)
 
-    args = parser.parse_args()
+    args = vars(parser.parse_args())  # convert to dict for ease of use
 
     return args
 
@@ -72,24 +73,24 @@ def validate_args(args):
     :param args:
     :return:
     """
-    assert args.florida_mean > 0, \
-        f"Expect florida_mean>0, got {args.florida_mean}"
+    assert args['florida_mean'] > 0, \
+        f"Expect florida_mean>0, got {args['florida_mean']}"
 
-    assert args.gulf_mean > 0, \
-        f"Expect gulf_mean>0, got {args.gulf_mean}"
+    assert args['gulf_mean'] > 0, \
+        f"Expect gulf_mean>0, got {args['gulf_mean']}"
 
-    florida_mean = np.log(args.florida_mean)
-    gulf_mean = np.log(args.gulf_mean)
+    assert args['simulator_id'] >= 0, \
+        f"Expect simulator_id>=0, got {args['simulator_id']}"
 
-    validated_args = {
-        "florida_landfall_rate": args.florida_landfall_rate,
-        "florida_mean": florida_mean,
-        "florida_stddev": args.florida_stddev,
-        "gulf_landfall_rate": args.gulf_landfall_rate,
-        "gulf_mean": gulf_mean,
-        "gulf_stddev": args.gulf_stddev,
-        "num_monte_carlo_samples": args.num_monte_carlo_samples,
-    }
+    # deepcopy ensures mutable items are copied too
+    validated_args = copy.deepcopy(args)
+
+    # validate parameters
+    # compute natural log of the LogNormal means
+    validated_args.update({
+        "florida_mean": np.log(args['florida_mean']),
+        "gulf_mean": np.log(args['gulf_mean']),
+    })
 
     logger.info("Validated parameters: ")
     for arg_k, arg_v in validated_args.items():
@@ -103,7 +104,7 @@ def main():
 
     validated_args = validate_args(args)
 
-    sim = Simulator(args.simulator_id)
+    sim = Simulator(validated_args["simulator_id"])
     sim.simulate(**validated_args)
 
     sys.exit(0)
