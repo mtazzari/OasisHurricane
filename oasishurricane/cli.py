@@ -3,14 +3,23 @@
 
 import sys
 import argparse
+import numpy as np
+import logging
+import logging.config
 
-# TODO: logging
+from .logs import LOGGING
 
+logging.config.dictConfig(LOGGING)
+logger = logging.getLogger(__name__)
 
 from .model import simulate
 
 
 def parse_args():
+    """
+
+    :return:
+    """
     parser = argparse.ArgumentParser()
 
     # parser = parser.add_argument_group('parser arguments')
@@ -55,18 +64,40 @@ def parse_args():
     return args
 
 
+def validate_args(args):
+    """
+
+    :param args:
+    :return:
+    """
+    assert args.florida_mean > 0, \
+        f"Expect florida_mean>0, got {args.florida_mean}"
+
+    assert args.gulf_mean > 0, \
+        f"Expect gulf_mean>0, got {args.gulf_mean}"
+
+    florida_mean = np.log(args.florida_mean)
+    gulf_mean = np.log(args.gulf_mean)
+
+    validated_args = {
+        "florida_landfall_rate": args.florida_landfall_rate,
+        "florida_mean": florida_mean,
+        "florida_stddev": args.florida_stddev,
+        "gulf_landfall_rate": args.gulf_landfall_rate,
+        "gulf_mean": gulf_mean,
+        "gulf_stddev": args.gulf_stddev,
+        "num_monte_carlo_samples": args.num_monte_carlo_samples,
+    }
+
+    return validated_args
+
+
 def main():
     args = parse_args()
 
-    simulate(
-        florida_landfall_rate=args.florida_landfall_rate,
-        florida_mean=args.florida_mean,
-        florida_stddev=args.florida_stddev,
-        gulf_landfall_rate=args.gulf_landfall_rate,
-        gulf_mean=args.gulf_mean,
-        gulf_stddev=args.gulf_stddev,
-        num_monte_carlo_samples=args.num_monte_carlo_samples,
-    )
+    validated_args = validate_args(args)
+
+    simulate(**validated_args)
 
     sys.exit(0)
 
