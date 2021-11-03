@@ -3,6 +3,8 @@
 
 import numpy as np
 import logging
+import time
+import datetime
 from alive_progress import alive_bar
 
 logger = logging.getLogger("model")
@@ -41,6 +43,7 @@ def simulate(florida_landfall_rate, florida_mean, florida_stddev,
     logger.info(f"Setting the random number generator with seed:{rng_seed}")
     rng = get_rng(rng_seed)
 
+    t0 = time.time()
     logger.info(f"Starting main loop over desired {num_monte_carlo_samples} Monte Carlo samples ")
     tot_loss = 0
 
@@ -70,7 +73,8 @@ def simulate(florida_landfall_rate, florida_mean, florida_stddev,
 
             bar()
 
-    logger.info("End of main loop")
+    t1 = time.time()
+    logger.info(f"End of main loop. Elapsed time: {datetime.timedelta(seconds=t1-t0)} (h:m:s)")
     mean_loss = tot_loss / num_monte_carlo_samples
 
     logger.info(f"MEAN LOSS: {mean_loss}")
