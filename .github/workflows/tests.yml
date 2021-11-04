@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [ 3.6, 3.7, 3.8, 3.9 ]
 
     steps:
       # Checks out a copy of your repository on the ubuntu-latest machine
@@ -22,9 +22,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
-      - name: Install dependencies
-        run: pip install matplotlib numpy pytest sphinx
-      - name: Install
-        run: pip install .
+      - name: Install test dependencies
+        run: |
+          pip install setuptools --upgrade
+          pip install .[test]
       - name: Run unit tests
         run: py.test oasishurricane/tests.py
