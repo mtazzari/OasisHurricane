@@ -17,6 +17,10 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
+        'concise': {
+            'format': '[%(asctime)s] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
         'simple': {
             'format': '[%(asctime)s] %(levelname)6s %(message)s',
             'datefmt': '%Y-%m-%d %H:%M:%S'
@@ -30,7 +34,7 @@ LOGGING = {
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'concise'
         },
         'development_logfile': {
             'level': 'DEBUG',
