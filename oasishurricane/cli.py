@@ -33,7 +33,7 @@ def parse_args():
                         action="store",
                         help="[float] florida_mean",
                         type=float)
-    parser.add_arguent("florida_stddev",
+    parser.add_argument("florida_stddev",
                         action="store",
                         help="[float] florida_stddev",
                         type=float)
