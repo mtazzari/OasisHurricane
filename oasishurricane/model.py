@@ -218,36 +218,46 @@ def mean_loss_noloops_py(florida_landfall_rate, florida_mean, florida_stddev,
     return tot_loss / num_monte_carlo_samples
 
 
+SIMULATORS = {
+    0: {
+        'func': mean_loss_py,
+        'desc': "python"
+    },
+    1: {
+        'func': mean_loss_jit,
+        'desc': "jit"
+    },
+    2: {
+        'func': mean_loss_jit_parallel,
+        'desc': "jit-parallel"
+    },
+    3: {
+        'func': mean_loss_noloops_jit,
+        'desc': "jit-noloops"
+    },
+    4: {
+        'func': mean_loss_noloops_py,
+        'desc': "python-noloops"
+    },
+}
+
+
 class Simulator(object):
     def __init__(self, simulator_id):
-        if simulator_id == 0:
-            self._simulate_core = mean_loss_py
-            self._desc = "python"
+        """Init the Simulator object by setting the simulator. """
+        try:
+            self._simulate_core = SIMULATORS[simulator_id]['func']
+            self._desc = SIMULATORS[simulator_id]['desc']
 
-        elif simulator_id == 1:
-            self._simulate_core = mean_loss_jit
-            self._desc = "jit"
+        except KeyError:
 
-        elif simulator_id == 2:
-            self._simulate_core = mean_loss_jit_parallel
-            self._desc = "jit-parallel"
-
-        elif simulator_id == 3:
-            self._simulate_core = mean_loss_noloops_jit
-            self._desc = "jit-noloops"
-
-        elif simulator_id == 4:
-            self._simulate_core = mean_loss_noloops_py
-            self._desc = "python-noloops"
-
-        else:
             raise NotImplementedError(f"simulator_id={simulator_id} is not implemented")
 
-        # TODOs
-        # this allows adding @timer on top of them
-        # define global variable (think how to do this)
+        finally:
+            logger.info(f"Simulator set to use: {self._desc}")
 
     def __str__(self):
+        """Description of the simulator engine used."""
         return f"{self._desc:16s}"
 
     def simulate(self, florida_landfall_rate, florida_mean, florida_stddev,
@@ -265,11 +275,11 @@ class Simulator(object):
 
         :param florida_landfall_rate: [float] annual rate of landfalling hurricanes in Florida.
         :param florida_mean: [float] mean of the economic loss of landfalling hurricane in Florida.
-        :param florida_stddev:  [float] std deviation of the economic loss of landfalling hurricane in Florida.
-        :param gulf_landfall_rate:  [float] annual rate of landfalling hurricanes in Gulf states.
-        :param gulf_mean:  [float] mean of the economic loss of landfalling hurricane in Gulf states.
+        :param florida_stddev: [float] std deviation of the economic loss of landfalling hurricane in Florida.
+        :param gulf_landfall_rate: [float] annual rate of landfalling hurricanes in Gulf states.
+        :param gulf_mean: [float] mean of the economic loss of landfalling hurricane in Gulf states.
         :param gulf_stddev: [float] std deviation of the economic loss of landfalling hurricane in Gulf states.
-        :param num_monte_carlo_samples: [int] Number of monte carlo samples, i.e. years.
+        :param num_monte_carlo_samples: [int] number of monte carlo samples, i.e. years.
         :param rng_seed: [int] (optional) Seed of the random number generator.
 
         :return: [float] Mean annual losses.

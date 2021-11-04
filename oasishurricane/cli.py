@@ -13,7 +13,7 @@ from .logs import LOGGING
 logging.config.dictConfig(LOGGING)
 logger = logging.getLogger("cli")
 
-from .model import Simulator
+from .model import Simulator, SIMULATORS
 
 
 def parse_args():
@@ -21,43 +21,47 @@ def parse_args():
 
     :return:
     """
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        usage='use "%(prog)s --help" for more information',
+        formatter_class=argparse.RawTextHelpFormatter  # for multi-line help text
+    )
 
     # parser = parser.add_argument_group('parser arguments')
 
     parser.add_argument("florida_landfall_rate",
                         action="store",
-                        help="[float] florida_landfall_rate",
+                        help="[float] annual rate of landfalling hurricanes in Florida.",
                         type=float)
     parser.add_argument("florida_mean",
                         action="store",
-                        help="[float] florida_mean",
+                        help="[float] mean of the economic loss of landfalling hurricane in Florida.",
                         type=float)
     parser.add_argument("florida_stddev",
                         action="store",
-                        help="[float] florida_stddev",
+                        help="[float] std deviation of the economic loss of landfalling hurricane in Florida.",
                         type=float)
     parser.add_argument("gulf_landfall_rate",
                         action="store",
-                        help="[float] gulf_landfall_rate",
+                        help="[float] annual rate of landfalling hurricanes in Gulf states.",
                         type=float)
     parser.add_argument("gulf_mean",
                         action="store",
-                        help="[float] gulf_mean",
+                        help="[float] mean of the economic loss of landfalling hurricane in Gulf states.",
                         type=float)
     parser.add_argument("gulf_stddev",
                         action="store",
-                        help="[float] gulf_stddev",
+                        help="[float] std deviation of the economic loss of landfalling hurricane in Gulf states.",
                         type=float)
     parser.add_argument("-n", "--num_monte_carlo_samples",
                         action="store",
-                        help="[int] num_monte_carlo_samples (default=10)",
+                        help="[int] number of monte carlo samples, i.e. years. (default=10)",
                         type=int,
                         dest="num_monte_carlo_samples",
                         default=10)
     parser.add_argument("-s", "--simulator",
                         action="store",
-                        help="",
+                        help="[int] simulator id. Implemented simulators: (id:name) \n" + \
+                             "\n".join([f"{k}: {v['desc']}" for k, v in SIMULATORS.items()]),
                         type=int,
                         dest="simulator_id",
                         default=0)
@@ -69,12 +73,17 @@ def parse_args():
 
 def validate_args(args):
     """
+    Validate parameters (args) passed in input through the CLI.
+    If necessary, perform transformations of parameter values to the simulation space.
 
-    :param args:
-    :return:
+    :param args: [dict] Parsed arguments.
+
+    :return: [dict] Validated arguments.
+
     """
-    assert args['florida_mean'] > 0, \
-        f"Expect florida_mean>0, got {args['florida_mean']}"
+    # check types
+    if args['florida_mean'] <= 0:
+        raise ValueError(f"Expect florida_mean>0, got {args['florida_mean']}")
 
     assert args['gulf_mean'] > 0, \
         f"Expect gulf_mean>0, got {args['gulf_mean']}"
@@ -92,6 +101,7 @@ def validate_args(args):
         "gulf_mean": np.log(args['gulf_mean']),
     })
 
+    # log validated parameter values
     logger.info("Validated parameters: ")
 
     numerical_args = [
@@ -110,11 +120,18 @@ def validate_args(args):
 
 
 def main():
+    """Main function, called through the shell entrypoint."""
+
+    # parse CLI arguments
     args = parse_args()
 
+    # validate (and transform, if necessary) arguments
     validated_args = validate_args(args)
 
+    # use the desired simulator
     sim = Simulator(validated_args["simulator_id"])
+
+    # run the simulation
     sim.simulate(**validated_args)
 
     sys.exit(0)
