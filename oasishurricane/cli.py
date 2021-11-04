@@ -81,15 +81,29 @@ def validate_args(args):
     :return: [dict] Validated arguments.
 
     """
-    # check types
+    # note: input data types are already checked by the parser object.
+
+    # here we check input values
+    if args['florida_landfall_rate'] <= 0:
+        raise ValueError(f"Expect florida_landfall_rate>0, got {args['florida_landfall_rate']}")
+
     if args['florida_mean'] <= 0:
         raise ValueError(f"Expect florida_mean>0, got {args['florida_mean']}")
 
-    assert args['gulf_mean'] > 0, \
-        f"Expect gulf_mean>0, got {args['gulf_mean']}"
+    if args['florida_stddev'] <= 0:
+        raise ValueError(f"Expect florida_stddev>0, got {args['florida_stddev']}")
 
-    assert args['simulator_id'] >= 0, \
-        f"Expect simulator_id>=0, got {args['simulator_id']}"
+    if args['gulf_landfall_rate'] <= 0:
+        raise ValueError(f"Expect gulf_landfall_rate>0, got {args['gulf_landfall_rate']}")
+
+    if args['gulf_mean'] < 0:
+        raise ValueError(f"Expect gulf_mean>0, got {args['gulf_mean']}")
+
+    if args['gulf_stddev'] < 0:
+        raise ValueError(f"Expect gulf_stddev>0, got {args['gulf_stddev']}")
+
+    if args['simulator_id'] < 0:
+        raise ValueError(f"Expect simulator_id>=0, got {args['simulator_id']}")
 
     # deepcopy ensures mutable items are copied too
     validated_args = copy.deepcopy(args)

@@ -5,8 +5,10 @@
 # gethurricaneloss 10 0.0001 0.001 20 0.0001 0.0001 -n 1000
 # should be 0
 
+import copy
 import numpy as np
 import pytest
+from pytest import raises
 
 from .cli import main
 from .model import SIMULATORS
@@ -51,7 +53,6 @@ args = [
     }
 ]
 
-
 @pytest.mark.parametrize("test_args",
                          [(args_) for args_ in args],
                          ids=["{}".format(i) for i in range(len(args))])
@@ -68,8 +69,8 @@ def test_simulators_consistency(test_args, rtol=0.01, atol=0.001):
 
     # iterate through simulators and check for consistency
     mean_loss = []
-    for id in SIMULATORS.keys():
-        test_args["simulator_id"] = id
+    for id_ in SIMULATORS.keys():
+        test_args["simulator_id"] = id_
         mean_loss.append(main(test_args))
 
     # compare results w.r.t. the python-only version, as a point-of-truth
@@ -77,7 +78,45 @@ def test_simulators_consistency(test_args, rtol=0.01, atol=0.001):
                                rtol=rtol)
 
 
-def test_Simulator_not_implemented():
-    pass
+@pytest.mark.parametrize("test_args",
+                         [(args_) for args_ in args],
+                         ids=["{}".format(i) for i in range(len(args))])
+def test_simulator_selection(test_args):
+    """Test exceptions if simulator doesn't exist. """
+    max_simulator_id = int(np.max(list(SIMULATORS.keys())))
 
-# test a not implemented simulator_id
+    # if simulator_id > max available should return NotImplementedError
+    test_args["simulator_id"] = max_simulator_id + 1
+    with raises(NotImplementedError,
+                match=f"simulator_id={test_args['simulator_id']} is not implemented"):
+        main(test_args)
+
+    # if simulator_id < 0 the validation should throw a ValueError
+    test_args["simulator_id"] = -1
+    with raises(ValueError, match="Expect simulator_id>=0, got -1"):
+        main(test_args)
+
+@pytest.mark.parametrize("test_args",
+                         [(args_) for args_ in args],
+                         ids=["{}".format(i) for i in range(len(args))])
+def test_input_parameter_values(test_args):
+    """Test exceptions if input data has forbidden values. """
+
+    numerical_args = [
+        "florida_landfall_rate",
+        "florida_mean",
+        "florida_stddev",
+        "gulf_landfall_rate",
+        "gulf_mean",
+        "gulf_stddev",
+    ]
+
+    for numerical_arg in numerical_args:
+        # turn negative each numerical argument; it should raise a Value Error
+        # take a deepcopy of test_args otherwise they are overwritten
+        test_args_ = copy.deepcopy(test_args)
+        test_args_[numerical_arg] *= -1
+        with raises(ValueError,
+                    match=f"Expect {numerical_arg}>0, got {test_args_[numerical_arg]}"):
+            main(test_args_)
+

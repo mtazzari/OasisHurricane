@@ -244,13 +244,10 @@ class Simulator(object):
         try:
             self._simulate_core = SIMULATORS[simulator_id]['func']
             self._desc = SIMULATORS[simulator_id]['desc']
+            logger.info(f"Using simulator: {self._desc}")
 
         except KeyError:
-
             raise NotImplementedError(f"simulator_id={simulator_id} is not implemented")
-
-        finally:
-            logger.info(f"Simulator set to use: {self._desc}")
 
     def __str__(self):
         """Description of the simulator engine used."""
