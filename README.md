@@ -25,6 +25,8 @@ Once installed, the requested Python command line utility has the following inte
 $ gethurricaneloss -h
 usage: use "gethurricaneloss --help" for more information
 
+A Python command-line utility for Linux that computes the economic loss for hurricanes in Florida and in the Gulf states.
+
 positional arguments:
   florida_landfall_rate
                         [float] annual rate of landfalling hurricanes in Florida.
@@ -39,12 +41,14 @@ optional arguments:
   -n NUM_MONTE_CARLO_SAMPLES, --num_monte_carlo_samples NUM_MONTE_CARLO_SAMPLES
                         [int] number of monte carlo samples, i.e. years. (default=10)
   -s SIMULATOR_ID, --simulator SIMULATOR_ID
-                        [int] simulator id. Implemented simulators: (id:name)
+                        [int] simulator id (default=0). Implemented simulators: (id:name)
                         0: python
                         1: jit
                         2: jit-parallel
                         3: jit-noloops
                         4: python-noloops
+  -t, --timeit          If provided, it records the timings of the MC simulation.
+                        If TIMEIT_LOGFILE is defined in the shell, it prints the timings to file, else to stdout.
 ```
 The positional parameters are required for execution. 
 
@@ -63,37 +67,62 @@ The implementations are:
 | 4   | `python-noloops`   | a pure Python`numpy`-only algorithm with **no explicit loops**          |
 
 ## Examples
-
-#### Example 21: get started with `gethurricanlosses`
-`gethurricaneloss` is easy to use, e.g.:
+Let us run a series of examples in which the losses are highly peaked around the
+mean loss values. Since the expected mean loss value is 
 ```bash
-$ gethurricaneloss 10 2 0.001 30 1 0.000001 -n 1000
-
-********************************************************************************
-** Welcome! You are using gethurricaneloss by Marco Tazzari.                  **
-**                                                                            **
-** gethurricaneloss is a Python command-line utility for Linux that computes  **
-** the economic loss for hurricanes in Florida and in the Gulf states.        **
-**                                                                            **
-********************************************************************************
-
-[2021-11-04 15:57:24]   INFO Validated parameters:
-[2021-11-04 15:57:24]   INFO          florida_landfall_rate =   10.00000
-[2021-11-04 15:57:24]   INFO                   florida_mean =    0.69315
-[2021-11-04 15:57:24]   INFO                 florida_stddev =    0.00100
-[2021-11-04 15:57:24]   INFO             gulf_landfall_rate =   30.00000
-[2021-11-04 15:57:24]   INFO                      gulf_mean =    0.00000
-[2021-11-04 15:57:24]   INFO                    gulf_stddev =    0.00000
-[2021-11-04 15:57:24]   INFO Using simulator: python
-[2021-11-04 15:57:24]   INFO Setting the random number generator with seed:None
-[2021-11-04 15:57:24]   INFO Starting main loop over desired 1000 Monte Carlo samples
-[2021-11-04 15:57:24]   INFO End of main loop. Elapsed time: 0:00:00.107569 (h:m:s)
-[2021-11-04 15:57:24]   INFO MEAN LOSS: 49.75181159464964
+florida_landfall_rate * florida_mean + gulf_landfall_rate * gulf_mean
 ```
-#### Example 2: run `gethurricanlosses` with different simulators
+it's easy to verify whether the result is about correct.
 
+### Example 1: get started with `gethurricaneloss`
+`gethurricaneloss` is easy to use. 
 
-### Logging
+Let us run it with 100k Monte Carlo steps (i.e., years):
+```bash
+$ gethurricaneloss 10 5 0.00001 30 1 0.00001 -n 100000
+[2021-11-04 16:33:01] gethurricaneloss v0.0.1 by Marco Tazzari
+[2021-11-04 16:33:01] Validated parameters:
+[2021-11-04 16:33:01]          florida_landfall_rate =   10.00000
+[2021-11-04 16:33:01]                   florida_mean =    1.60944
+[2021-11-04 16:33:01]                 florida_stddev =    0.00001
+[2021-11-04 16:33:01]             gulf_landfall_rate =   30.00000
+[2021-11-04 16:33:01]                      gulf_mean =    0.00000
+[2021-11-04 16:33:01]                    gulf_stddev =    0.00001
+[2021-11-04 16:33:01] Using simulator: python
+[2021-11-04 16:33:01] Setting the random number generator with seed:None
+[2021-11-04 16:33:01] Starting main loop over desired 100000 Monte Carlo samples
+[2021-11-04 16:33:12] End of main loop. Elapsed time: 0:00:11.463529 (h:m:s)
+[2021-11-04 16:33:12] MEAN LOSS: 79.96644884090169
+```
+By default, `gethurricaneloss` uses the `python` simulator.
+
+> **Note:**  the `validated parameters` printed in the console/log show the values of the parameters after validation (type- and value-checking), and transformation, if necessary.
+
+> **Note:**  `florida_mean` and `gulf_mean` printed in the console/log are the natural log of the values 
+passed in input by the user: the transformation ensures that the expected value of the lognormal distribution
+is the value of `florida_mean` passed by the user (as opposed to `exp^florida_mean`). The same applies to `gulf_mean`.
+
+### Example 2: run `gethurricaneloss` with different simulators
+Let us now run `gethurricaneloss` using the `python-noloops` simulator (id: 4) by passing the `-s4` option.
+```bash
+$ gethurricaneloss 10 5 0.00001 30 1 0.00001 -n 100000 -s4
+[2021-11-04 16:44:03] gethurricaneloss v0.0.1 by Marco Tazzari
+[2021-11-04 16:44:03] Validated parameters:
+[2021-11-04 16:44:03]          florida_landfall_rate =   10.00000
+[2021-11-04 16:44:03]                   florida_mean =    1.60944
+[2021-11-04 16:44:03]                 florida_stddev =    0.00001
+[2021-11-04 16:44:03]             gulf_landfall_rate =   30.00000
+[2021-11-04 16:44:03]                      gulf_mean =    0.00000
+[2021-11-04 16:44:03]                    gulf_stddev =    0.00001
+[2021-11-04 16:44:03] Using simulator: python-noloops
+[2021-11-04 16:44:03] Setting the random number generator with seed:None
+[2021-11-04 16:44:03] Starting main loop over desired 100000 Monte Carlo samples
+[2021-11-04 16:44:03] End of main loop. Elapsed time: 0:00:00.174803 (h:m:s)
+[2021-11-04 16:44:03] MEAN LOSS: 80.01731942131745
+```
+This is waaaay faster! 0.17s vs 11.46, a 67x speed-up! 
+
+## Logging
 Logging is handled with the `logging` Python module:
 
 - the **console** shows a concise and easy-to-read log;
@@ -103,7 +132,7 @@ Logging is handled with the `logging` Python module:
 The numerical `.x` suffix (e.g., `.1`, `.2`, ...) in the log filenames allows for a rotating log file handling, for logs
 of large volume.
 
-### Testing
+## Testing
 Testing uses `pytest` and is performed automatically with GitHub Actions on every push on any branch.
 
 Note that GitHub Actions is free for an unlimited amount of compute-minutes for open source projects.
@@ -130,13 +159,14 @@ Additional tests that it would be easy to implement:
 - additional convergence checks.
 
 ## Accuracy checks
-Accuracy is checked in the tests,
+Accuracy is checked in the tests.
 
 In particular, `test_simulators_consistency` checks that the 5 implementations of the hurricane loss model return mean loss
 values within a given accuracy. To have relatively quick checks, the threshold accuracy is now set to 1%, but it can be
 made smaller (i.e. tighter constraint), at the cost of longer CI tests.
 
 ## Performance checks
+TBD
 
 ## Author
 
