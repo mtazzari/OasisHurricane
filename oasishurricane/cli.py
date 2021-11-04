@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
-
+import os
 import sys
 import argparse
 import numpy as np
@@ -14,14 +14,17 @@ logging.config.dictConfig(LOGGING)
 logger = logging.getLogger("cli")
 
 from .model import Simulator, SIMULATORS
-
+from . import __version__
 
 def parse_args():
     """
+    Parse arguments from CLI.
 
-    :return:
+    :return: [dict] Parsed arguments.
+
     """
     parser = argparse.ArgumentParser(
+        description="A Python command-line utility for Linux that computes the economic loss for hurricanes in Florida and in the Gulf states.",
         usage='use "%(prog)s --help" for more information',
         formatter_class=argparse.RawTextHelpFormatter  # for multi-line help text
     )
@@ -65,6 +68,13 @@ def parse_args():
                         type=int,
                         dest="simulator_id",
                         default=0)
+    parser.add_argument("-t", "--timeit",
+                        action="store_true",
+                        help="If provided, it records the timings of the MC simulation. \n" + \
+                             "If TIMEIT_LOGFILE is defined in the shell, it prints the timings to file, else to stdout.",
+                        # type=bool,
+                        dest="timeit",
+                        default=False)
 
     args = vars(parser.parse_args())  # convert to dict for ease of use
 
@@ -130,6 +140,10 @@ def validate_args(args):
     for arg_k in numerical_args:
         logger.info(f"{arg_k:>30s} = {validated_args[arg_k]:>10.5f}")
 
+    if validated_args["timeit"] and os.environ["TIMEIT_LOGFILE"]:
+        logger.info(
+            f"Found TIMEIT_LOGFILE: timings will be recorded in {os.environ['TIMEIT_LOGFILE']}")
+
     return validated_args
 
 
@@ -145,6 +159,9 @@ def main(args=None):
         # the code is used as a CLI, parse the arguments
         as_CLI = True
         args = parse_args()
+
+    # splash message
+    logger.info(f"gethurricaneloss v{__version__} by Marco Tazzari")
 
     # validate (and transform, if necessary) arguments
     validated_args = validate_args(args)

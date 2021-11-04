@@ -27,7 +27,7 @@ def get_rng(seed=None):
 @timer
 def mean_loss_py(florida_landfall_rate, florida_mean, florida_stddev,
                  gulf_landfall_rate, gulf_mean, gulf_stddev, num_monte_carlo_samples,
-                 timeit_discard=False):
+                 timeit=False, timeit_discard=False):
     """
     Compute mean economic loss in Pure Python.
 
@@ -68,7 +68,7 @@ def mean_loss_py(florida_landfall_rate, florida_mean, florida_stddev,
 @jit(nopython=True)
 def mean_loss_jit(florida_landfall_rate, florida_mean, florida_stddev,
                   gulf_landfall_rate, gulf_mean, gulf_stddev, num_monte_carlo_samples,
-                  timeit_discard=False):
+                  timeit=False, timeit_discard=False):
     """
     Compute mean economic loss with explicit loops and jit-compilation with numba.
 
@@ -110,7 +110,7 @@ def mean_loss_jit(florida_landfall_rate, florida_mean, florida_stddev,
 @njit(parallel=True)
 def mean_loss_jit_parallel(florida_landfall_rate, florida_mean, florida_stddev,
                            gulf_landfall_rate, gulf_mean, gulf_stddev, num_monte_carlo_samples,
-                           timeit_discard=False):
+                           timeit=False, timeit_discard=False):
     """
     Compute mean economic loss with explicit loops, jit-compilation, and auto-parallelization with numba.
 
@@ -150,7 +150,7 @@ def mean_loss_jit_parallel(florida_landfall_rate, florida_mean, florida_stddev,
 @jit(nopython=True)
 def mean_loss_noloops_jit(florida_landfall_rate, florida_mean, florida_stddev,
                           gulf_landfall_rate, gulf_mean, gulf_stddev, num_monte_carlo_samples,
-                          timeit_discard=False):
+                          timeit=False, timeit_discard=False):
     """
     Compute mean economic loss with numpy vectorization, no explicit loops, and jit-compilation with numba.
 
@@ -183,7 +183,7 @@ def mean_loss_noloops_jit(florida_landfall_rate, florida_mean, florida_stddev,
 @timer
 def mean_loss_noloops_py(florida_landfall_rate, florida_mean, florida_stddev,
                          gulf_landfall_rate, gulf_mean, gulf_stddev, num_monte_carlo_samples,
-                         timeit_discard=False):
+                         timeit=False, timeit_discard=False):
     """
     Compute mean economic loss in Pure Python, using numpy vectorization and no explicit loops.
 
@@ -294,7 +294,7 @@ class Simulator(object):
         mean_loss = self._simulate_core(florida_landfall_rate, florida_mean, florida_stddev,
                                         gulf_landfall_rate, gulf_mean, gulf_stddev,
                                         num_monte_carlo_samples,
-                                        )
+                                        timeit=kwargs.get('timeit', False))
 
         t1 = time.time()
         logger.info(

@@ -4,6 +4,9 @@
 import functools
 import time
 import os
+import logging
+
+logger = logging.getLogger("timing")
 
 
 # TODO: pass named arguments to the core functions to improve formatting of the logfile
@@ -14,7 +17,9 @@ def timer(func):
 
     :param func: decorated function
     :return: the evaluated function
+
     """
+
     @functools.wraps(func)
     def wrapper_timer(*args, **kwargs):
         tic = time.perf_counter()
@@ -26,14 +31,16 @@ def timer(func):
             return value
 
         # timeit_msg = f"Elapsed time: {elapsed_time:0.4f} seconds"
-        timeit_msg = "\t".join([f"{arg:>10.6f}" for arg in args])
-        timeit_msg += "\t" + f"{elapsed_time:5.4f}"
+        timeit_msg = " ".join([f"{arg:>10.6f}" for arg in args])
+        timeit_msg += " " + f"{elapsed_time:10.6f}"
         timeit_msg += " \n"
-        if 'TIMEIT_LOGFILE' in os.environ:
-            with open(os.environ['TIMEIT_LOGFILE'], "a") as f:
-                f.write(timeit_msg)
-        else:
-            print(timeit_msg)
+
+        if kwargs.get("timeit", False):
+            if 'TIMEIT_LOGFILE' in os.environ:
+                with open(os.environ['TIMEIT_LOGFILE'], "a") as f:
+                    f.write(timeit_msg)
+            else:
+                logger.info("timeit: " + timeit_msg)
 
         return value
 
