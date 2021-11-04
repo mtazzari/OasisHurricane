@@ -28,6 +28,7 @@ args = [
         "num_monte_carlo_samples": 20000,
         "simulator_id": 0,
         "rng_seed": SEED,
+        "timeit": False,
     },
     {  # test larger rates
         "florida_landfall_rate": 30.,
@@ -39,6 +40,7 @@ args = [
         "num_monte_carlo_samples": 20000,
         "simulator_id": 0,
         "rng_seed": SEED,
+        "timeit": False,
     },
     {  # test larger losses (requires deeper MC sampling)
         "florida_landfall_rate": 8.,
@@ -50,6 +52,7 @@ args = [
         "num_monte_carlo_samples": 1000000,
         "simulator_id": 0,
         "rng_seed": SEED,
+        "timeit": False,
     }
 ]
 
