@@ -119,11 +119,18 @@ def validate_args(args):
     return validated_args
 
 
-def main():
-    """Main function, called through the shell entrypoint."""
+def main(args=None):
+    """
+    Main function, called through the shell entrypoint.
+    # TODO: IMPROVE DOCS
 
-    # parse CLI arguments
-    args = parse_args()
+    """
+    as_CLI = False
+
+    if not args:
+        # the code is used as a CLI, parse the arguments
+        as_CLI = True
+        args = parse_args()
 
     # validate (and transform, if necessary) arguments
     validated_args = validate_args(args)
@@ -132,9 +139,12 @@ def main():
     sim = Simulator(validated_args["simulator_id"])
 
     # run the simulation
-    sim.simulate(**validated_args)
+    mean_loss = sim.simulate(**validated_args)
 
-    sys.exit(0)
+    if as_CLI:
+        sys.exit(0)
+    else:
+        return mean_loss
 
 
 if __name__ == "__main__":
