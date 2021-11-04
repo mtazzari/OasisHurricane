@@ -27,7 +27,9 @@ def timer(func):
         toc = time.perf_counter()
         elapsed_time = toc - tic
 
-        if kwargs.get("timeit_discard", False):
+        timeit = kwargs.get("timeit", False)
+
+        if not timeit:
             return value
 
         # timeit_msg = f"Elapsed time: {elapsed_time:0.4f} seconds"
@@ -35,12 +37,11 @@ def timer(func):
         timeit_msg += " " + f"{elapsed_time:10.6f}"
         timeit_msg += " \n"
 
-        if kwargs.get("timeit", False):
-            if 'TIMEIT_LOGFILE' in os.environ:
-                with open(os.environ['TIMEIT_LOGFILE'], "a") as f:
-                    f.write(timeit_msg)
-            else:
-                logger.info("timeit: " + timeit_msg)
+        if 'TIMEIT_LOGFILE' in os.environ:
+            with open(os.environ['TIMEIT_LOGFILE'], "a") as f:
+                f.write(timeit_msg)
+        else:
+            logger.info("timeit: " + timeit_msg)
 
         return value
 

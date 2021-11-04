@@ -140,7 +140,7 @@ def validate_args(args):
     for arg_k in numerical_args:
         logger.info(f"{arg_k:>30s} = {validated_args[arg_k]:>10.5f}")
 
-    if validated_args["timeit"] and os.environ["TIMEIT_LOGFILE"]:
+    if validated_args["timeit"] and "TIMEIT_LOGFILE" in os.environ:
         logger.info(
             f"Found TIMEIT_LOGFILE: timings will be recorded in {os.environ['TIMEIT_LOGFILE']}")
 
@@ -150,7 +150,14 @@ def validate_args(args):
 def main(args=None):
     """
     Main function, called through the shell entrypoint.
-    # TODO: IMPROVE DOCS
+    If no args are passed, the function assumes it is called as a CLI and parses the args from the shell.
+    If args are passed (e.g., when testing), then the args are not parsed.
+    In any case, the args are validated.
+    If used as a CLI, the function terminates the program, otherwise it returns the mean loss.
+
+    :param args: [dict] CLI arguments (default=None).
+
+    :return mean_loss: [float,optional] The mean economic loss.
 
     """
     as_CLI = False

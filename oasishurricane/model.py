@@ -27,7 +27,7 @@ def get_rng(seed=None):
 @timer
 def mean_loss_py(florida_landfall_rate, florida_mean, florida_stddev,
                  gulf_landfall_rate, gulf_mean, gulf_stddev, num_monte_carlo_samples,
-                 timeit=False, timeit_discard=False):
+                 timeit=False):
     """
     Compute mean economic loss in Pure Python.
 
@@ -38,7 +38,7 @@ def mean_loss_py(florida_landfall_rate, florida_mean, florida_stddev,
     :param gulf_mean:  [float] mean of the economic loss of landfalling hurricane in Gulf states.
     :param gulf_stddev: [float] std deviation of the economic loss of landfalling hurricane in Gulf states.
     :param num_monte_carlo_samples: [int] Number of monte carlo samples, i.e. years.
-    :param timeit_discard: [bool] (optional) If True, @timer does not record the timing. Only used by @timer.
+    :param timeit: [bool] (optional) If True @timer records the timing. Only used by @timer.
 
     :return: [float] Mean annual losses.
 
@@ -68,7 +68,7 @@ def mean_loss_py(florida_landfall_rate, florida_mean, florida_stddev,
 @jit(nopython=True)
 def mean_loss_jit(florida_landfall_rate, florida_mean, florida_stddev,
                   gulf_landfall_rate, gulf_mean, gulf_stddev, num_monte_carlo_samples,
-                  timeit=False, timeit_discard=False):
+                  timeit=False):
     """
     Compute mean economic loss with explicit loops and jit-compilation with numba.
 
@@ -79,7 +79,7 @@ def mean_loss_jit(florida_landfall_rate, florida_mean, florida_stddev,
     :param gulf_mean:  [float] mean of the economic loss of landfalling hurricane in Gulf states.
     :param gulf_stddev: [float] std deviation of the economic loss of landfalling hurricane in Gulf states.
     :param num_monte_carlo_samples: [int] Number of monte carlo samples, i.e. years.
-    :param timeit_discard: [bool] (optional) If True, @timer does not record the timing. Only used by @timer.
+    :param timeit: [bool] (optional) If True @timer records the timing. Only used by @timer.
 
     :return: [float] Mean annual losses.
 
@@ -110,7 +110,7 @@ def mean_loss_jit(florida_landfall_rate, florida_mean, florida_stddev,
 @njit(parallel=True)
 def mean_loss_jit_parallel(florida_landfall_rate, florida_mean, florida_stddev,
                            gulf_landfall_rate, gulf_mean, gulf_stddev, num_monte_carlo_samples,
-                           timeit=False, timeit_discard=False):
+                           timeit=False):
     """
     Compute mean economic loss with explicit loops, jit-compilation, and auto-parallelization with numba.
 
@@ -121,7 +121,7 @@ def mean_loss_jit_parallel(florida_landfall_rate, florida_mean, florida_stddev,
     :param gulf_mean:  [float] mean of the economic loss of landfalling hurricane in Gulf states.
     :param gulf_stddev: [float] std deviation of the economic loss of landfalling hurricane in Gulf states.
     :param num_monte_carlo_samples: [int] Number of monte carlo samples, i.e. years.
-    :param timeit_discard: [bool] (optional) If True, @timer does not record/print the timing. Only used by @timer.
+    :param timeit: [bool] (optional) If True @timer records the timing. Only used by @timer.
 
     :return: [float] Mean annual losses.
 
@@ -150,7 +150,7 @@ def mean_loss_jit_parallel(florida_landfall_rate, florida_mean, florida_stddev,
 @jit(nopython=True)
 def mean_loss_noloops_jit(florida_landfall_rate, florida_mean, florida_stddev,
                           gulf_landfall_rate, gulf_mean, gulf_stddev, num_monte_carlo_samples,
-                          timeit=False, timeit_discard=False):
+                          timeit=False):
     """
     Compute mean economic loss with numpy vectorization, no explicit loops, and jit-compilation with numba.
 
@@ -161,7 +161,7 @@ def mean_loss_noloops_jit(florida_landfall_rate, florida_mean, florida_stddev,
     :param gulf_mean:  [float] mean of the economic loss of landfalling hurricane in Gulf states.
     :param gulf_stddev: [float] std deviation of the economic loss of landfalling hurricane in Gulf states.
     :param num_monte_carlo_samples: [int] Number of monte carlo samples, i.e. years.
-    :param timeit_discard: [bool] (optional) If True, @timer does not record the timing. Only used by @timer.
+    :param timeit: [bool] (optional) If True @timer records the timing. Only used by @timer.
 
     :return: [float] Mean annual losses.
 
@@ -183,7 +183,7 @@ def mean_loss_noloops_jit(florida_landfall_rate, florida_mean, florida_stddev,
 @timer
 def mean_loss_noloops_py(florida_landfall_rate, florida_mean, florida_stddev,
                          gulf_landfall_rate, gulf_mean, gulf_stddev, num_monte_carlo_samples,
-                         timeit=False, timeit_discard=False):
+                         timeit=False):
     """
     Compute mean economic loss in Pure Python, using numpy vectorization and no explicit loops.
 
@@ -194,7 +194,7 @@ def mean_loss_noloops_py(florida_landfall_rate, florida_mean, florida_stddev,
     :param gulf_mean:  [float] mean of the economic loss of landfalling hurricane in Gulf states.
     :param gulf_stddev: [float] std deviation of the economic loss of landfalling hurricane in Gulf states.
     :param num_monte_carlo_samples: [int] Number of monte carlo samples, i.e. years.
-    :param timeit_discard: [bool] (optional) If True, @timer does not record the timing. Only used by @timer.
+    :param timeit: [bool] (optional) If True @timer records the timing. Only used by @timer.
 
     :return: [float] Mean annual losses.
 
@@ -288,7 +288,7 @@ class Simulator(object):
             f"Starting main loop over desired {num_monte_carlo_samples} Monte Carlo samples ")
 
         # dummy call to jit-compile it
-        _ = self._simulate_core(1, 1e-10, 1e-10, 1, 1e-10, 1e-10, 1, timeit_discard=True)
+        _ = self._simulate_core(1, 1e-10, 1e-10, 1, 1e-10, 1e-10, 1, timeit=False)
 
         t0 = time.time()
         mean_loss = self._simulate_core(florida_landfall_rate, florida_mean, florida_stddev,
