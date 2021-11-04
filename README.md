@@ -4,8 +4,7 @@ A Python command-line utility for Linux that computes the economic loss for hurr
 
 
 
-Installation
-------------
+## Installation
 As easy as
 
 ```bash
@@ -20,8 +19,7 @@ cd OasisHurricane
 pip install .
 ```
 
-Basic usage
------------
+## Basic usage
 Once installed, the requested Python command line utility has the following interface:
 ```bash
 $ gethurricaneloss -h
@@ -50,10 +48,11 @@ optional arguments:
 ```
 The positional parameters are required for execution. 
 
-The utility has 5 different implementations of the proposed Monte Carlo hurricane losses model, which can be selected 
-with the `-s` or `--simulator` option by providing the `id` of the simulator.
+The utility has **5 different implementations** of the proposed Monte Carlo hurricane losses model, which can be selected 
+with the `-s` or `--simulator` option by providing the `id` of the simulator. The implementations achieve different levels
+of acceleration w.r.t. the baseline pure-`python` implementation.
 
-The implementations:
+The implementations are:
 
 | ID  | Simulator          | Description |
 | --- | ------------------ | ----------- |
@@ -63,13 +62,27 @@ The implementations:
 | 3   | `jit-noloops`      | a `numpy`-only algorithm with **no explicit loops**, with `numba` just-in-time compilation   |
 | 4   | `python-noloops`   | a pure Python`numpy`-only algorithm with **no explicit loops**          |
 
-Author
-------
+## Examples
+
+#### Example 21: get started with `gethurricanlosses`
+
+#### Example 2: run `gethurricanlosses` with different simulators
+
+
+## Accuracy checks
+Accuracy is checked in the tests, that are run on GitHub Actions CI for every pushed commit on any branch.
+
+In particular, `test_simulators_consistency` checks that the 5 implementations of the hurricane loss model return mean loss
+values within a given accuracy. To have relatively quick checks, the threshold accuracy is now set to 1%, but it can be
+made smaller (i.e. tighter constraint), at the cost of longer CI tests.
+
+## Performance checks
+
+## Author
 
 - [Marco Tazzari](https://github.com/mtazzari)
 
-License
--------
+## License
 **oasishurricane** is free software licensed under the BSD-3 License. For more details see
 the [LICENSE](https://github.com/mtazzari/oasishurricane/blob/main/LICENSE).
 

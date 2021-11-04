@@ -60,7 +60,7 @@ def parse_args():
                         default=10)
     parser.add_argument("-s", "--simulator",
                         action="store",
-                        help="[int] simulator id. Implemented simulators: (id:name) \n" + \
+                        help="[int] simulator id (default=0). Implemented simulators: (id:name) \n" + \
                              "\n".join([f"{k}: {v['desc']}" for k, v in SIMULATORS.items()]),
                         type=int,
                         dest="simulator_id",
