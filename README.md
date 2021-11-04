@@ -141,9 +141,9 @@ I implemented three tests, with a matrix of parametrizations:
 
 | test name                          | test description                                            |
 | ---------------------------------- | ----------------------------------------------------------- |
-| test_simulators_accuracy           | Test if the different simulators return mean losses that agree within a relative tolerance `rtol` and an absolute tolerance `atol`. |
-| test_simulator_selection           | Test exceptions if the chosen simulator_id doesn't exist.    |
-| test_input_parameter_values        | Test exceptions if input data has forbidden values.         |
+| `test_simulators_accuracy`           | Test if the different simulators return mean losses that agree within a relative tolerance `rtol` and an absolute tolerance `atol`. |
+| `test_simulator_selection`           | Test exceptions if the chosen simulator_id doesn't exist.    |
+| `test_input_parameter_values`        | Test exceptions if input data has forbidden values.         |
 
 All the three tests use `pytest.mark.parametrize`, which allows repeating the same test with different
 input parameters, handy to test the validity of a test under different scenarios.
