@@ -36,7 +36,7 @@ def parse_args():
                         action="store",
                         help="[float] mean of the economic loss of landfalling hurricane in Florida.",
                         type=float)
-    parser.add_argument("florida_stddev",
+    parser.add_arguent("florida_stddev",
                         action="store",
                         help="[float] std deviation of the economic loss of landfalling hurricane in Florida.",
                         type=float)
