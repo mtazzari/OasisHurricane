@@ -33,7 +33,7 @@ def parse_args():
                         action="store",
                         help="[float] florida_mean",
                         type=float)
-    parser.add_argument("florida_stddev",
+    parser.add_arguent("florida_stddev",
                         action="store",
                         help="[float] florida_stddev",
                         type=float)
@@ -93,8 +93,18 @@ def validate_args(args):
     })
 
     logger.info("Validated parameters: ")
-    for arg_k, arg_v in validated_args.items():
-        logger.info(f"{arg_k:>30s} = {arg_v:>10.5f}")
+
+    numerical_args = [
+        "florida_landfall_rate",
+        "florida_mean",
+        "florida_stddev",
+        "gulf_landfall_rate",
+        "gulf_mean",
+        "gulf_stddev",
+    ]
+
+    for arg_k in numerical_args:
+        logger.info(f"{arg_k:>30s} = {validated_args[arg_k]:>10.5f}")
 
     return validated_args
 
