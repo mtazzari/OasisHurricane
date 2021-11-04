@@ -41,11 +41,11 @@ args = [
     {  # test larger losses (requires deeper MC sampling)
         "florida_landfall_rate": 8.,
         "florida_mean": 10.2333,
-        "florida_stddev": 2.297,
+        "florida_stddev": 1.8345,
         "gulf_landfall_rate": 15.,
         "gulf_mean": 4.33232,
-        "gulf_stddev": 1.2344,
-        "num_monte_carlo_samples": 900000,
+        "gulf_stddev": 1.1344,
+        "num_monte_carlo_samples": 1000000,
         "simulator_id": 0,
         "rng_seed": SEED,
     }
