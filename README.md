@@ -68,7 +68,7 @@ The implementations are:
 
 ## Examples
 Let us run a series of examples in which the losses are highly peaked around the
-mean loss values. Since the expected mean loss value is 
+mean loss values. Since the events are all independent, the expected mean loss value is 
 ```bash
 florida_landfall_rate * florida_mean + gulf_landfall_rate * gulf_mean
 ```
@@ -120,7 +120,7 @@ $ gethurricaneloss 10 5 0.00001 30 1 0.00001 -n 100000 -s4
 [2021-11-04 16:44:03] End of main loop. Elapsed time: 0:00:00.174803 (h:m:s)
 [2021-11-04 16:44:03] MEAN LOSS: 80.01731942131745
 ```
-This is waaaay faster! 0.17s vs 11.46, a 67x speed-up! 
+This is waaaay faster! 0.17s vs 11.46s compared to the explicit-loop Python version (`python` simulator), a 67x speed-up! 
 
 ## Logging
 Logging is handled with the `logging` Python module:
