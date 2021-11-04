@@ -65,12 +65,72 @@ The implementations are:
 ## Examples
 
 #### Example 21: get started with `gethurricanlosses`
+`gethurricaneloss` is easy to use, e.g.:
+```bash
+$ gethurricaneloss 10 2 0.001 30 1 0.000001 -n 1000
 
+********************************************************************************
+** Welcome! You are using gethurricaneloss by Marco Tazzari.                  **
+**                                                                            **
+** gethurricaneloss is a Python command-line utility for Linux that computes  **
+** the economic loss for hurricanes in Florida and in the Gulf states.        **
+**                                                                            **
+********************************************************************************
+
+[2021-11-04 15:57:24]   INFO Validated parameters:
+[2021-11-04 15:57:24]   INFO          florida_landfall_rate =   10.00000
+[2021-11-04 15:57:24]   INFO                   florida_mean =    0.69315
+[2021-11-04 15:57:24]   INFO                 florida_stddev =    0.00100
+[2021-11-04 15:57:24]   INFO             gulf_landfall_rate =   30.00000
+[2021-11-04 15:57:24]   INFO                      gulf_mean =    0.00000
+[2021-11-04 15:57:24]   INFO                    gulf_stddev =    0.00000
+[2021-11-04 15:57:24]   INFO Using simulator: python
+[2021-11-04 15:57:24]   INFO Setting the random number generator with seed:None
+[2021-11-04 15:57:24]   INFO Starting main loop over desired 1000 Monte Carlo samples
+[2021-11-04 15:57:24]   INFO End of main loop. Elapsed time: 0:00:00.107569 (h:m:s)
+[2021-11-04 15:57:24]   INFO MEAN LOSS: 49.75181159464964
+```
 #### Example 2: run `gethurricanlosses` with different simulators
 
 
+### Logging
+Logging is handled with the `logging` Python module:
+
+- the **console** shows a concise and easy-to-read log;
+- a **development logfile** stores the debug-level logs (typically named `gethurricaneloss_dev.log.x`);
+- a **production logfile** stores a production-level (info and above) logs (typically named `gethurricaneloss.log.x`).
+
+The numerical `.x` suffix (e.g., `.1`, `.2`, ...) in the log filenames allows for a rotating log file handling, for logs
+of large volume.
+
+### Testing
+Testing uses `pytest` and is performed automatically with GitHub Actions on every push on any branch.
+
+Note that GitHub Actions is free for an unlimited amount of compute-minutes for open source projects.
+
+I implemented three tests, with a matrix of parametrizations:
+
+| test name                          | test description                                            |
+| ---------------------------------- | ----------------------------------------------------------- |
+| test_simulators_accuracy           | Test if the different simulators return mean losses that agree within a relative tolerance `rtol` and an absolute tolerance `atol`. |
+| test_simulator_selection           | Test exceptions if the chosen simulator_id doesn't exist.    |
+| test_input_parameter_values        | Test exceptions if input data has forbidden values.         |
+
+All the three tests use `pytest.mark.parametrize`, which allows repeating the same test with different
+input parameters, handy to test the validity of a test under different scenarios.
+
+Additional tests that it would be easy to implement:
+
+- a test against analytical expected values for the mean loss, considering that the expectation values for
+  the Poissonian is the `mean` (i.e., `florida_landfall_rate`) and the expected values for the LogNormal is
+  again the `mean` (i.e., `florida_mean`).
+
+- a test to check the CLI usage from a shell (e.g., using `subprocess`).
+
+- additional convergence checks.
+
 ## Accuracy checks
-Accuracy is checked in the tests, that are run on GitHub Actions CI for every pushed commit on any branch.
+Accuracy is checked in the tests,
 
 In particular, `test_simulators_consistency` checks that the 5 implementations of the hurricane loss model return mean loss
 values within a given accuracy. To have relatively quick checks, the threshold accuracy is now set to 1%, but it can be
