@@ -45,7 +45,7 @@ args = [
         "gulf_landfall_rate": 15.,
         "gulf_mean": 4.33232,
         "gulf_stddev": 1.2344,
-        "num_monte_carlo_samples": 700000,
+        "num_monte_carlo_samples": 900000,
         "simulator_id": 0,
         "rng_seed": SEED,
     }
