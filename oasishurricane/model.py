@@ -7,6 +7,8 @@ import time
 import datetime
 from numba import jit, njit, prange
 
+logging.getLogger('numba').setLevel(logging.WARNING)
+
 logger = logging.getLogger("model")
 
 from .utils import timer
@@ -44,22 +46,16 @@ def mean_loss_py(florida_landfall_rate, florida_mean, florida_stddev,
     tot_loss = 0
 
     for i in range(num_monte_carlo_samples):
-        log_prefix = f"year {i:0>10} "
-
         fl_events = np.random.poisson(lam=florida_landfall_rate, size=1)[0]
-        logger.debug(log_prefix + f"Florida events: {fl_events:0>3}")
         fl_loss = 0
         for j in range(fl_events):
             fl_loss += np.random.lognormal(florida_mean, florida_stddev)
-            logger.debug(log_prefix + f"Florida loss: {fl_loss:05.3f}")
 
         gulf_events = np.random.poisson(lam=gulf_landfall_rate, size=1)[0]
-        logger.debug(log_prefix + f"Gulf events: {gulf_events:5.3f}")
 
         gulf_loss = 0
         for k in range(gulf_events):
             gulf_loss += np.random.lognormal(gulf_mean, gulf_stddev)
-            logger.debug(log_prefix + f"Gulf loss: {gulf_loss:05.3f}")
 
         year_loss = fl_loss + gulf_loss
 
