@@ -148,6 +148,8 @@ I implemented three tests, with a matrix of parametrizations:
 All the three tests use `pytest.mark.parametrize`, which allows repeating the same test with different
 input parameters, handy to test the validity of a test under different scenarios.
 
+To keep the tests reproducible, I fix the random seed to the `SEED` defined in `tests.py`.
+
 Additional tests that it would be easy to implement:
 
 - a test against analytical expected values for the mean loss, considering that the expectation values for
