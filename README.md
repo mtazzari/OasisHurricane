@@ -156,12 +156,12 @@ Additional tests that it would be easy to implement:
 
 - a test to check the CLI usage from a shell (e.g., using `subprocess`).
 
-- additional convergence checks.
+- additional convergence checks for different regimes of the input parameters.
 
 ## Accuracy checks
 Accuracy is checked in the tests.
 
-In particular, `test_simulators_consistency` checks that the 5 implementations of the hurricane loss model return mean loss
+In particular, `test_simulators_accuracy` checks that the 5 implementations of the hurricane loss model return mean loss
 values within a given accuracy. To have relatively quick checks, the threshold accuracy is now set to 1%, but it can be
 made smaller (i.e. tighter constraint), at the cost of longer CI tests.
 
