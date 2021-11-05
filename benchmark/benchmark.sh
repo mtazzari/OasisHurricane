@@ -1,7 +1,9 @@
-# s0
+# bash script to run all the benchmarks
 
 TIMINGS_LOGS_DIR="timings"
 
+
+# simulator 0
 export TIMEIT=1
 export TIMEIT_CYCLES=100
 export TIMEIT_LOGFILE="${TIMINGS_LOGS_DIR}/timings_s0.txt"
@@ -15,6 +17,7 @@ export TIMEIT_CYCLES=4
 gethurricaneloss 10 2 0.001 30 1 0.000001 -n 1000000 -s0
 
 
+# simulators 1, 2, 3, 4
 export TIMEIT_CYCLES=1000
 
 num_monte_carlo_samples="10 100 1000 10000 100000"   #manca 100000
