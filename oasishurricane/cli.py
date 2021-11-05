@@ -29,8 +29,6 @@ def parse_args():
         formatter_class=argparse.RawTextHelpFormatter  # for multi-line help text
     )
 
-    # parser = parser.add_argument_group('parser arguments')
-
     parser.add_argument("florida_landfall_rate",
                         action="store",
                         help="[float] annual rate of landfalling hurricanes in Florida.",
