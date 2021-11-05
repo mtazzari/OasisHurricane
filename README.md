@@ -275,7 +275,7 @@ In this plot I present the scaling as a function of `num_monte_carlo_samples`:
  </p>
 
 <p align="center">
-   <img width="600" height="600" src="benchmark/execution_time_vs_num_monte_carlo_samples.png?raw=true"/>		 
+   <img src="benchmark/execution_time_vs_num_monte_carlo_samples.png" width="600" height="600"/>		 
  </p>
 
  
