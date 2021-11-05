@@ -307,7 +307,7 @@ Comments:
 > The plots shown in this README are done in this [Jupyter notebook](benchmark/plot_timing_results.ipynb).
 ## Author
 
-- [Marco Tazzari](https://github.com/mtazzari)
+[Marco Tazzari](https://github.com/mtazzari)
 
 ## License
 **oasishurricane** is free software licensed under the BSD-3 License. For more details see

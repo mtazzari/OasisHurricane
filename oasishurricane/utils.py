@@ -11,7 +11,6 @@ import numpy as np
 logger = logging.getLogger("timing")
 
 
-# TODO: pass named arguments to the core functions to improve formatting of the logfile
 def timer(cycles=3):
     """
     Decorator that times the decorated function.
