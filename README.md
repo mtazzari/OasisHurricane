@@ -21,7 +21,11 @@ pip install .
 ```
 
 ## Basic usage
-Once installed, the requested Python command line utility has the following interface:
+Once installed, the requested Python command line utility can be called in the shell:
+```bash
+$ gethurricaneloss
+```
+and has the following interface:
 ```bash
 $ gethurricaneloss -h
 usage: use "gethurricaneloss --help" for more information
