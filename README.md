@@ -167,8 +167,116 @@ In particular, `test_simulators_accuracy` checks that the 5 implementations of t
 values within a given accuracy. To have relatively quick checks, the threshold accuracy is now set to 1%, but it can be
 made smaller (i.e. tighter constraint), at the cost of longer CI tests.
 
-## Performance checks
-TBD
+## Performance
+In order to test the performance of the implemented algorithms (simulators) I adopt a Factory design patter for the
+`Simulator` class. `Simulator` exposes a `.simulate()` method that is defined at instantiation depending on the
+`simulator_id` provided, e.g.:
+```py
+from oasishurricane.model import Simulator
+sim = Simulator(simulator_id=1)
+```
+This allows for a modular and quick replacement of the core MC model.
+
+To properly evaluate the performance of the simulators I defined an ad-hoc decorator `oasishurricane.utils.timer` 
+that runs the simulator core function for the desired number of `cycles`, momentarily deactivates the garbage collector, and computes the best execution time among the `cycles` execution times. For reference, I follow nomenclature of `timeit.Timer`.
+
+The timing functionality can be activated by setting the `TIMEIT` environment variable, e.g.
+```bash
+export TIMEIT=1
+```
+Additional parameters to customize the timing functionality are:
+
+- `TIMEIT_CYCLES`: the number of times the simulator core function is executed. The larger, the better, but
+                   for large `num_monte_carlo_samples` it might be handy to reduce it. If not set, `cycles=3`.
+- `TIMEIT_LOGFILE`: the filename of the log where to store the timings. If not set, it prints to the console log. 
+
+### Examples
+With this setup
+```bash
+export TIMEIT=1
+export TIMEIT_CYCLES=33
+export TIMEIT_LOGFILE=timings_example.txt
+```
+we obtain the following output in the console, where the cycles and the logfile are reported:
+```bash
+$ gethurricaneloss 10 2 0.001 30 1 0.000001 -n 1000 -s3
+[2021-11-05 01:25:52] gethurricaneloss v0.0.1 by Marco Tazzari
+[2021-11-05 01:25:52] Validated parameters:
+[2021-11-05 01:25:52]          florida_landfall_rate =   10.00000
+[2021-11-05 01:25:52]                   florida_mean =    0.69315
+[2021-11-05 01:25:52]                 florida_stddev =    0.00100
+[2021-11-05 01:25:52]             gulf_landfall_rate =   30.00000
+[2021-11-05 01:25:52]                      gulf_mean =    0.00000
+[2021-11-05 01:25:52]                    gulf_stddev =    0.00000
+[2021-11-05 01:25:52] Found TIMEIT and TIMEIT_LOGFILE: timings will be logged in timings_example.txt
+[2021-11-05 01:25:52] Using simulator: jit-noloops
+[2021-11-05 01:25:52] Setting the random number generator with seed:None
+[2021-11-05 01:25:52] Starting main loop over desired 1000 Monte Carlo samples
+[2021-11-05 01:25:52] Timings are computed by running 33 times the function.
+[2021-11-05 01:25:53] End of main loop. Elapsed time: 0:00:00.478656 (h:m:s)
+[2021-11-05 01:25:53] MEAN LOSS: 49.98602443852616
+```
+This is the content of `timings_example.txt`:
+```text
+ 10.000000   0.693147   0.001000  30.000000   0.000000   0.000001 1000.000000         33   0.001399  49.986024 
+```
+where the columns are:
+
+- `florida_landfall_rate` 
+- `ln(florida_mean)` 
+- `florida_stddev` 
+- `gulf_landfall_rate` 
+- `ln(gulf_mean)` 
+- `gulf_stddev` 
+- `num_monte_carlo_samples`
+- `cycles`
+- `best execution time`
+- Mean economic loss
+
+By running multiple times `gethurricaneloss` with the environment variables as above, the timings are appended, e.g.:
+```text
+ 10.000000   0.693147   0.001000  30.000000   0.000000   0.000001  10.000000       1000   0.000013  49.966121 
+ 10.000000   0.693147   0.001000  30.000000   0.000000   0.000001 100.000000       1000   0.000133  50.037439 
+ 10.000000   0.693147   0.001000  30.000000   0.000000   0.000001 1000.000000       1000   0.001401  49.991665 
+ 10.000000   0.693147   0.001000  30.000000   0.000000   0.000001 10000.000000       1000   0.014170  50.000415 
+ 10.000000   0.693147   0.001000  30.000000   0.000000   0.000001 100000.000000       1000   0.144798  49.999268 
+ 10.000000   0.693147   0.001000  30.000000   0.000000   0.000001 1000000.000000         50   1.464731  50.000486 
+ 10.000000   0.693147   0.001000  30.000000   0.000000   0.000001 10000000.000000          5  14.800176  50.001481 
+```
+
+Timing functionality is deactivated by unsetting `TIMEIT`:
+```bash
+unset TIMEIT
+```
+
+### Results
+To quantify the performance of the different implementations I wrote a simple bash script (benchmark/benchmark.sh)
+to compute the execution time for all the 5 simulators, each of them for a range of `num_monte_carlo_samples`
+between 10 and 10 millions.
+
+All the execution times are in the `benchmark/timings/` folder, e.g. `timings_s0.txt` for `simulator_id=0` (`python`).
+
+In this plot I present the scaling as a function of `num_monte_carlo_samples`:
+
+<p align="center">
+   <img width = "800" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/execution_time_vs_num_monte_carlo_samples.png?raw=true"/>		 
+ </p>
+
+Comments:
+
+- the scaling is pretty much linear (cf. reference dashed line) for all the implementations.
+- the pure `python` implementation is, as expected, the least efficient.
+- the `numba.jit` compilation does a achieves a 75x speed-up when applied to non-optimized functions with explicit
+  loops (`jit`), roughly the same speed-up achieved by implementations with no explicit loops (`jit-noloops`).
+- using only numpy functions with no explicit loops achieves a very good acceleration (75x w.r.t. `python`).
+- `numba.jit` with `parallel` option is further 5.7x faster than the `jit` version. Overall, the `jit-parallel` 
+  version is 390x faster than pure `python`.
+
+In the following figure I show the convergence of the mean economic losses for increasing `num_monte_carlo_samples`.
+
+FIGURE
+
+Comments:
 
 ## Author
 
