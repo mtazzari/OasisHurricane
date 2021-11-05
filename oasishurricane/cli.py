@@ -13,7 +13,7 @@ from .logs import LOGGING
 logging.config.dictConfig(LOGGING)
 logger = logging.getLogger("cli")
 
-from .model import Simulator, SIMULATORS
+from .simulator import Simulator, SIMULATORS
 from . import __version__
 
 def parse_args():
@@ -172,6 +172,7 @@ def main(args=None):
     mean_loss = sim.simulate(**validated_args)
 
     if as_CLI:
+        print(mean_loss)
         sys.exit(0)
     else:
         return mean_loss

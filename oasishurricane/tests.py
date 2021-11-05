@@ -11,7 +11,7 @@ import pytest
 from pytest import raises
 
 from .cli import main
-from .model import SIMULATORS
+from .simulator import SIMULATORS
 
 # fix random number generator seed
 SEED = 123456789
