@@ -163,21 +163,34 @@ Additional tests that it would be easy to implement:
 Accuracy is checked in the tests.
 
 In particular, `test_simulators_accuracy` checks that the 5 implementations of the hurricane loss model return mean loss
-values within a given accuracy. To have relatively quick checks, the threshold accuracy is now set to 1%, but it can be
+values within a given accuracy, for 3 sets of input parameters. 
+
+To have relatively quick checks, the threshold accuracy is now set to 1%, but it can be
 made smaller (i.e. tighter constraint), at the cost of longer CI tests.
 
 ## Performance
-In order to test the performance of the implemented algorithms (simulators) I adopt a Factory design patter for the
-`Simulator` class. `Simulator` exposes a `.simulate()` method that is defined at instantiation depending on the
-`simulator_id` provided, e.g.:
+In order to test the performance of the implemented simulators I adopt a Factory design patter for the
+`Simulator` class, e.g.:
 ```py
 from oasishurricane.model import Simulator
 sim = Simulator(simulator_id=1)
 ```
-This allows for a modular and quick replacement of the core MC model.
+Regardless of the chosen simulator, the MC simulation is run with:
+```py
+sim.simulate(**validated_parameters)
+```
+where `validated_parameters` are the CLI input parameters after validation.
+
+This architecture allows for a modular and quick replacement of the core MC model. 
 
 To properly evaluate the performance of the simulators I defined an ad-hoc decorator `oasishurricane.utils.timer` 
-that runs the simulator core function for the desired number of `cycles`, momentarily deactivates the garbage collector, and computes the best execution time among the `cycles` execution times. For reference, I follow nomenclature of `timeit.Timer`.
+which:
+
+- runs the simulator core function for the desired number of `cycles`, 
+- momentarily deactivates the garbage collector, 
+- computes the best execution time among the `cycles` execution times. 
+
+For reference: in developing `oasishurricane.utils.timer`, I follow the nomenclature of `timeit.Timer`.
 
 The timing functionality can be activated by setting the `TIMEIT` environment variable, e.g.
 ```bash
