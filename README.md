@@ -271,29 +271,25 @@ All the execution times are in the `benchmark/timings/` folder, e.g. `timings_s0
 In this plot I present the scaling as a function of `num_monte_carlo_samples`:
 
 <p align="center">
-   <img width = "800" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/execution_time_vs_num_monte_carlo_samples.png?raw=true"/>		 
+   <img width = "600" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/execution_time_vs_num_monte_carlo_samples.png?raw=true"/>		 
  </p>
 
-<p align="center">
-   <img src="benchmark/execution_time_vs_num_monte_carlo_samples.png" width="600" height="600"/>		 
- </p>
-
- 
-
-Comments:
+**Comments:**
 
 - the scaling is pretty much linear (cf. reference dashed line) for all the implementations.
 - the pure `python` implementation is, as expected, the least efficient.
-- the `numba.jit` compilation does a achieves a 75x speed-up when applied to non-optimized functions with explicit
-  loops (`jit`), roughly the same speed-up achieved by implementations with no explicit loops (`jit-noloops`).
-- using only numpy functions with no explicit loops achieves a very good acceleration (75x w.r.t. `python`).
+- the `numba.jit` compilation achieves a 75x speed-up when applied to the `python` implementation (`jit`), roughly the same speed-up achieved by implementations with no explicit loops (`jit-noloops`).
+- using only numpy functions with no explicit loops achieves a very good acceleration as well (75x w.r.t. `python`),
+  without the need of `numba.jit`.
 - `numba.jit` with `parallel` option is further 5.7x faster than the `jit` version. Overall, the `jit-parallel` 
   version is 390x faster than pure `python`.
 
 In the following figure I show the convergence of the mean economic losses for increasing `num_monte_carlo_samples`.
 
-FIGURE
-
+<p align="center">
+   <img width = "600" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/mean_loss_vs_num_monte_carlo_samples.png.png?raw=true"/>		 
+ </p>
+ 
 Comments:
 
 ## Author
