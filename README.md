@@ -292,7 +292,8 @@ In the following figure I show the convergence of the mean economic losses for i
  
 Comments:
 
-- with increasing `num_monte_carlo_samples` the implementations tend towards the expected value (dashed line at mean loss=50 $B).
+- as expected, with increasing `num_monte_carlo_samples`, all the implementations tend towards the 
+  same expected value (dashed line at mean loss=50 $B).
 - the pure `python` implementation is slightly slower in converging than the others.
 
 ## Author
