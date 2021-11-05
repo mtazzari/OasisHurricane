@@ -3,6 +3,7 @@
 
 import os
 
+# setup the directories for namespacing
 BASE_DIR = os.path.curdir
 LOGS_DIR = BASE_DIR
 
@@ -12,11 +13,15 @@ PROD_LOGFILE = "gethurricaneloss.log"
 DEVELOPMENT_LOGFILE = os.path.join(LOGS_DIR, DEV_LOGFILE)
 PRODUCTION_LOGFILE = os.path.join(LOGS_DIR, PROD_LOGFILE)
 
-
+# define logging config
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
+        'concise': {
+            'format': '[%(asctime)s] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
         'simple': {
             'format': '[%(asctime)s] %(levelname)6s %(message)s',
             'datefmt': '%Y-%m-%d %H:%M:%S'
@@ -30,7 +35,7 @@ LOGGING = {
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'concise'
         },
         'development_logfile': {
             'level': 'DEBUG',

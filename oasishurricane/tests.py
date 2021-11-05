@@ -11,7 +11,7 @@ import pytest
 from pytest import raises
 
 from .cli import main
-from .model import SIMULATORS
+from .simulator import SIMULATORS
 
 # fix random number generator seed
 SEED = 123456789
@@ -28,6 +28,7 @@ args = [
         "num_monte_carlo_samples": 20000,
         "simulator_id": 0,
         "rng_seed": SEED,
+        "timeit": False,
     },
     {  # test larger rates
         "florida_landfall_rate": 30.,
@@ -39,6 +40,7 @@ args = [
         "num_monte_carlo_samples": 20000,
         "simulator_id": 0,
         "rng_seed": SEED,
+        "timeit": False,
     },
     {  # test larger losses (requires deeper MC sampling)
         "florida_landfall_rate": 8.,
@@ -50,16 +52,17 @@ args = [
         "num_monte_carlo_samples": 1000000,
         "simulator_id": 0,
         "rng_seed": SEED,
+        "timeit": False,
     }
 ]
 
 @pytest.mark.parametrize("test_args",
                          [(args_) for args_ in args],
                          ids=["{}".format(i) for i in range(len(args))])
-def test_simulators_consistency(test_args, rtol=0.01, atol=0.001):
+def test_simulators_accuracy(test_args, rtol=0.01, atol=0.001):
     """
     Test if simulators return mean losses that agree within a relative tolerance `rtol`
-    and an absolute tolerance `atol`
+    and an absolute tolerance `atol`.
     :param test_args: [dict] test arguments, same format as in the CLI (i.e., before validation)
     :param rtol: relative tolerance of the checks
     :param atol: absolute tolerance of the checks
@@ -82,7 +85,7 @@ def test_simulators_consistency(test_args, rtol=0.01, atol=0.001):
                          [(args_) for args_ in args],
                          ids=["{}".format(i) for i in range(len(args))])
 def test_simulator_selection(test_args):
-    """Test exceptions if simulator doesn't exist. """
+    """Test exceptions if the chosen simulator_id doesn't exist. """
     max_simulator_id = int(np.max(list(SIMULATORS.keys())))
 
     # if simulator_id > max available should return NotImplementedError

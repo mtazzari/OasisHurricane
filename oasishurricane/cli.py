@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
-
+import os
 import sys
 import argparse
 import numpy as np
@@ -13,20 +13,21 @@ from .logs import LOGGING
 logging.config.dictConfig(LOGGING)
 logger = logging.getLogger("cli")
 
-from .model import Simulator, SIMULATORS
-
+from .simulator import Simulator, SIMULATORS
+from . import __version__
 
 def parse_args():
     """
+    Parse arguments from CLI.
 
-    :return:
+    :return: [dict] Parsed arguments.
+
     """
     parser = argparse.ArgumentParser(
+        description="A Python command-line utility for Linux that computes the economic loss for hurricanes in Florida and in the Gulf states.",
         usage='use "%(prog)s --help" for more information',
         formatter_class=argparse.RawTextHelpFormatter  # for multi-line help text
     )
-
-    # parser = parser.add_argument_group('parser arguments')
 
     parser.add_argument("florida_landfall_rate",
                         action="store",
@@ -60,12 +61,11 @@ def parse_args():
                         default=10)
     parser.add_argument("-s", "--simulator",
                         action="store",
-                        help="[int] simulator id. Implemented simulators: (id:name) \n" + \
+                        help="[int] simulator id (default=0). Implemented simulators: (id:name) \n" + \
                              "\n".join([f"{k}: {v['desc']}" for k, v in SIMULATORS.items()]),
                         type=int,
                         dest="simulator_id",
                         default=0)
-
     args = vars(parser.parse_args())  # convert to dict for ease of use
 
     return args
@@ -130,13 +130,26 @@ def validate_args(args):
     for arg_k in numerical_args:
         logger.info(f"{arg_k:>30s} = {validated_args[arg_k]:>10.5f}")
 
+    if os.getenv("TIMEIT"):
+        if os.getenv("TIMEIT_LOGFILE"):
+            logger.info(
+                f"Found TIMEIT and TIMEIT_LOGFILE: timings will be logged in {os.getenv('TIMEIT_LOGFILE')}")
+        else:
+            logger.info("Found TIMEIT: logging timings to the console.")
     return validated_args
 
 
 def main(args=None):
     """
     Main function, called through the shell entrypoint.
-    # TODO: IMPROVE DOCS
+    If no args are passed, the function assumes it is called as a CLI and parses the args from the shell.
+    If args are passed (e.g., when testing), then the args are not parsed.
+    In any case, the args are validated.
+    If used as a CLI, the function terminates the program, otherwise it returns the mean loss.
+
+    :param args: [dict] CLI arguments (default=None).
+
+    :return mean_loss: [float,optional] The mean economic loss.
 
     """
     as_CLI = False
@@ -145,6 +158,9 @@ def main(args=None):
         # the code is used as a CLI, parse the arguments
         as_CLI = True
         args = parse_args()
+
+    # splash message
+    logger.info(f"gethurricaneloss v{__version__} by Marco Tazzari")
 
     # validate (and transform, if necessary) arguments
     validated_args = validate_args(args)
@@ -156,6 +172,7 @@ def main(args=None):
     mean_loss = sim.simulate(**validated_args)
 
     if as_CLI:
+        print(mean_loss)
         sys.exit(0)
     else:
         return mean_loss
