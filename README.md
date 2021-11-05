@@ -279,8 +279,9 @@ between 10 and 10 millions.
 
 All the execution times are in the `benchmark/timings/` folder, e.g. `timings_s0.txt` for `simulator_id=0` (`python`).
 
-In this plot I present the scaling as a function of `num_monte_carlo_samples`:
+For reference, all the timings were performed on an Apple Macbook Pro (13-inch 2019) with a 2.4 GHz Intel Core i5 and 16 GB 2133 MHz LPDDR3 of RAM.
 
+In this plot I present the scaling as a function of `num_monte_carlo_samples`:
 <p align="center">
    <img width = "600" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/execution_time_vs_num_monte_carlo_samples.png?raw=true"/>		 
  </p>
@@ -295,13 +296,12 @@ In this plot I present the scaling as a function of `num_monte_carlo_samples`:
 - `numba.jit` with `parallel` option is further 5.7x faster than the `jit` version. Overall, the `jit-parallel` 
   version is 390x faster than pure `python`.
 
-Speedups are clear in the following plot:
+The following plot shows the speedups over the `python` implementation:
 <p align="center">
    <img width = "600" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/speedup_vs_num_monte_carlo_samples.png?raw=true"/>		 
  </p>
 
 In the following figure I show the convergence of the mean economic losses for increasing `num_monte_carlo_samples`.
-
 <p align="center">
    <img width = "600" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/mean_loss_vs_num_monte_carlo_samples.png?raw=true"/>		 
  </p>
