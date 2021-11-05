@@ -9,7 +9,7 @@ A Python command-line utility for Linux that computes the economic loss for hurr
 As easy as:
 
 ```bash
-pip git+https://github.com/mtazzari/OasisHurricane.git
+pip install git+https://github.com/mtazzari/OasisHurricane.git
 ```
 
 or, if you prefer to have the code locally, first clone the github repo and then install it with:
