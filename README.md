@@ -203,13 +203,13 @@ Additional parameters to customize the timing functionality are:
 - `TIMEIT_LOGFILE`: the filename of the log where to store the timings. If not set, it prints to the console log. 
 
 ### Examples
-With this setup
+With this setup:
 ```bash
 export TIMEIT=1
 export TIMEIT_CYCLES=33
 export TIMEIT_LOGFILE=timings_example.txt
 ```
-we obtain the following output in the console, where the cycles and the logfile are reported:
+we obtain the following output in the console:
 ```bash
 $ gethurricaneloss 10 2 0.001 30 1 0.000001 -n 1000 -s3
 [2021-11-05 01:25:52] gethurricaneloss v0.0.1 by Marco Tazzari
@@ -273,6 +273,12 @@ In this plot I present the scaling as a function of `num_monte_carlo_samples`:
 <p align="center">
    <img width = "800" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/execution_time_vs_num_monte_carlo_samples.png?raw=true"/>		 
  </p>
+
+<p align="center">
+   <img width="600" height="600" src="benchmark/execution_time_vs_num_monte_carlo_samples.png?raw=true"/>		 
+ </p>
+
+ 
 
 Comments:
 
