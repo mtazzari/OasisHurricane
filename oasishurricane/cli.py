@@ -68,14 +68,6 @@ def parse_args():
                         type=int,
                         dest="simulator_id",
                         default=0)
-    parser.add_argument("-t", "--timeit",
-                        action="store_true",
-                        help="If provided, it records the timings of the MC simulation. \n" + \
-                             "If TIMEIT_LOGFILE is defined in the shell, it prints the timings to file, else to stdout.",
-                        # type=bool,
-                        dest="timeit",
-                        default=False)
-
     args = vars(parser.parse_args())  # convert to dict for ease of use
 
     return args
@@ -140,10 +132,12 @@ def validate_args(args):
     for arg_k in numerical_args:
         logger.info(f"{arg_k:>30s} = {validated_args[arg_k]:>10.5f}")
 
-    if validated_args["timeit"] and "TIMEIT_LOGFILE" in os.environ:
-        logger.info(
-            f"Found TIMEIT_LOGFILE: timings will be recorded in {os.environ['TIMEIT_LOGFILE']}")
-
+    if os.getenv("TIMEIT"):
+        if os.getenv("TIMEIT_LOGFILE"):
+            logger.info(
+                f"Found TIMEIT and TIMEIT_LOGFILE: timings will be logged in {os.getenv('TIMEIT_LOGFILE')}")
+        else:
+            logger.info("Found TIMEIT: logging timings to the console.")
     return validated_args
 
 
