@@ -287,7 +287,7 @@ In this plot I present the scaling as a function of `num_monte_carlo_samples`:
 In the following figure I show the convergence of the mean economic losses for increasing `num_monte_carlo_samples`.
 
 <p align="center">
-   <img width = "600" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/mean_loss_vs_num_monte_carlo_samples.png.png?raw=true"/>		 
+   <img width = "600" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/mean_loss_vs_num_monte_carlo_samples.png?raw=true"/>		 
  </p>
  
 Comments:
