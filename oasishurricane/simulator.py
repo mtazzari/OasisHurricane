@@ -205,6 +205,46 @@ def mean_loss_noloops_py(florida_landfall_rate, florida_mean, florida_stddev,
     return tot_loss / num_monte_carlo_samples
 
 
+@timer(cycles=int(os.getenv("TIMEIT_CYCLES", 100)))
+@njit("float64(float64, float64, float64, float64, float64, float64, int64)",
+      parallel=True, fastmath=True, nogil=True)
+def mean_loss_jit_parallel_fastmath(florida_landfall_rate, florida_mean, florida_stddev,
+                                    gulf_landfall_rate, gulf_mean, gulf_stddev,
+                                    num_monte_carlo_samples):
+    """
+    Compute mean economic loss with explicit loops, jit-compilation, and auto-parallelization with numba.
+
+    :param florida_landfall_rate: [float] annual rate of landfalling hurricanes in Florida.
+    :param florida_mean: [float] mean of the economic loss of landfalling hurricane in Florida.
+    :param florida_stddev:  [float] std deviation of the economic loss of landfalling hurricane in Florida.
+    :param gulf_landfall_rate:  [float] annual rate of landfalling hurricanes in Gulf states.
+    :param gulf_mean:  [float] mean of the economic loss of landfalling hurricane in Gulf states.
+    :param gulf_stddev: [float] std deviation of the economic loss of landfalling hurricane in Gulf states.
+    :param num_monte_carlo_samples: [int] Number of monte carlo samples, i.e. years.
+
+    :return: [float] Mean annual losses.
+
+    """
+    fl_events = np.random.poisson(lam=florida_landfall_rate, size=num_monte_carlo_samples)
+    gulf_events = np.random.poisson(lam=gulf_landfall_rate, size=num_monte_carlo_samples)
+
+    tot_loss = 0
+    for i in prange(num_monte_carlo_samples):
+        fl_loss = 0
+        for j in range(fl_events[i]):
+            fl_loss += np.random.lognormal(florida_mean, florida_stddev)
+
+        gulf_loss = 0
+        for k in range(gulf_events[i]):
+            gulf_loss += np.random.lognormal(gulf_mean, gulf_stddev)
+
+        year_loss = fl_loss + gulf_loss
+
+        tot_loss += year_loss
+
+    return tot_loss / num_monte_carlo_samples
+
+
 SIMULATORS = {
     0: {
         'func': mean_loss_py,
@@ -225,6 +265,10 @@ SIMULATORS = {
     4: {
         'func': mean_loss_noloops_py,
         'desc': "python-noloops"
+    },
+    5: {
+        'func': mean_loss_jit_parallel_fastmath,
+        'desc': "jit-parallel-fastmath"
     },
 }
 
