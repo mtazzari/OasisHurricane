@@ -92,8 +92,13 @@ $ gethurricaneloss 10 5 0.00001 30 1 0.00001 -n 100000
 [2021-11-04 16:33:01] Starting main loop over desired 100000 Monte Carlo samples
 [2021-11-04 16:33:12] End of main loop. Elapsed time: 0:00:11.463529 (h:m:s)
 [2021-11-04 16:33:12] MEAN LOSS: 79.96644884090169
+79.96644884090169
 ```
 By default, `gethurricaneloss` uses the `python` simulator.
+
+Note that the last line of the console output is the mean loss: this is because the test sheet required 
+the CLI utility to return the expected mean economic loss.
+
 
 > **Note:**  the `validated parameters` printed in the console/log show the values of the parameters after validation (type- and value-checking), and transformation, if necessary.
 
@@ -101,7 +106,7 @@ By default, `gethurricaneloss` uses the `python` simulator.
 passed in input by the user: the transformation ensures that the expected value of the lognormal distribution
 is the value of `florida_mean` passed by the user (as opposed to `exp^florida_mean`). The same applies to `gulf_mean`.
 
-### Example 2: run `gethurricaneloss` with different simulators
+### Example 2: run `gethurricaneloss` with a different simulator
 Let us now run `gethurricaneloss` using the `python-noloops` simulator (id: 4) by passing the `-s4` option.
 ```bash
 $ gethurricaneloss 10 5 0.00001 30 1 0.00001 -n 100000 -s4
@@ -118,6 +123,7 @@ $ gethurricaneloss 10 5 0.00001 30 1 0.00001 -n 100000 -s4
 [2021-11-04 16:44:03] Starting main loop over desired 100000 Monte Carlo samples
 [2021-11-04 16:44:03] End of main loop. Elapsed time: 0:00:00.174803 (h:m:s)
 [2021-11-04 16:44:03] MEAN LOSS: 80.01731942131745
+80.01731942131745
 ```
 This is waaaay faster! 0.17s vs 11.46s compared to the explicit-loop Python version (`python` simulator), a 67x speed-up! 
 
@@ -171,8 +177,10 @@ made smaller (i.e. tighter constraint), at the cost of longer CI tests.
 ## Performance
 In order to test the performance of the implemented simulators I adopt a Factory design patter for the
 `Simulator` class, e.g.:
+
 ```py
-from oasishurricane.model import Simulator
+from oasishurricane.simulator import Simulator
+
 sim = Simulator(simulator_id=1)
 ```
 Regardless of the chosen simulator, the MC simulation is run with:
@@ -227,6 +235,7 @@ $ gethurricaneloss 10 2 0.001 30 1 0.000001 -n 1000 -s3
 [2021-11-05 01:25:52] Timings are computed by running 33 times the function.
 [2021-11-05 01:25:53] End of main loop. Elapsed time: 0:00:00.478656 (h:m:s)
 [2021-11-05 01:25:53] MEAN LOSS: 49.98602443852616
+49.98602443852616
 ```
 This is the content of `timings_example.txt`:
 ```text
