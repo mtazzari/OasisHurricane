@@ -23,11 +23,14 @@ pip install .
 ## Basic usage
 Once installed, the requested Python command line utility can be called in the shell:
 ```bash
-$ gethurricaneloss
+gethurricaneloss
 ```
-and has the following interface:
+The interface of the command line utility can be inspected with:
 ```bash
-$ gethurricaneloss -h
+gethurricaneloss -h
+```
+which produces
+```bash
 usage: use "gethurricaneloss --help" for more information
 
 A Python command-line utility for Linux that computes the economic loss for hurricanes in Florida and in the Gulf states.
@@ -74,7 +77,7 @@ The implementations are:
 ## Examples
 Let us run a series of examples in which the losses are highly peaked around the
 mean loss values. Since the events are all independent, the expected mean loss value is 
-```bash
+```py
 florida_landfall_rate * florida_mean + gulf_landfall_rate * gulf_mean
 ```
 it's easy to verify whether the result is about correct.
@@ -84,7 +87,10 @@ it's easy to verify whether the result is about correct.
 
 Let us run it with 100k Monte Carlo steps (i.e., years):
 ```bash
-$ gethurricaneloss 10 5 0.00001 30 1 0.00001 -n 100000
+gethurricaneloss 10 5 0.00001 30 1 0.00001 -n 100000
+```
+which produces:
+```bash
 [2021-11-04 16:33:01] gethurricaneloss v0.0.1 by Marco Tazzari
 [2021-11-04 16:33:01] Validated parameters:
 [2021-11-04 16:33:01]          florida_landfall_rate =   10.00000
@@ -115,7 +121,10 @@ is the value of `florida_mean` passed by the user (as opposed to `exp^florida_me
 ### Example 2: run `gethurricaneloss` with a different simulator
 Let us now run `gethurricaneloss` using the `python-noloops` simulator (id: 4) by passing the `-s4` option.
 ```bash
-$ gethurricaneloss 10 5 0.00001 30 1 0.00001 -n 100000 -s4
+gethurricaneloss 10 5 0.00001 30 1 0.00001 -n 100000 -s4
+```
+which produces:
+```bash
 [2021-11-04 16:44:03] gethurricaneloss v0.0.1 by Marco Tazzari
 [2021-11-04 16:44:03] Validated parameters:
 [2021-11-04 16:44:03]          florida_landfall_rate =   10.00000
@@ -214,9 +223,12 @@ export TIMEIT=1
 export TIMEIT_CYCLES=33
 export TIMEIT_LOGFILE=timings_example.txt
 ```
+when we run 
+```bash
+gethurricaneloss 10 2 0.001 30 1 0.000001 -n 1000 -s3
+```
 we obtain the following output in the console:
 ```bash
-$ gethurricaneloss 10 2 0.001 30 1 0.000001 -n 1000 -s3
 [2021-11-05 01:25:52] gethurricaneloss v0.0.1 by Marco Tazzari
 [2021-11-05 01:25:52] Validated parameters:
 [2021-11-05 01:25:52]          florida_landfall_rate =   10.00000
