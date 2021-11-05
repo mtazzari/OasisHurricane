@@ -3,10 +3,10 @@
 [![image](https://github.com/mtazzari/oasishurricane/actions/workflows/tests.yml/badge.svg)](https://github.com/mtazzari/oasishurricane/actions/workflows/tests.yml)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://github.com/mtazzari/OasisHurricane/blob/main/LICENSE)
 
-A Python command-line utility for Linux that computes the economic loss for hurricanes in Florida and in the Gulf states
+A Python command-line utility for Linux that computes the economic loss for hurricanes in Florida and in the Gulf states.
 
 ## Installation
-As easy as
+As easy as:
 
 ```bash
 pip git+https://github.com/mtazzari/OasisHurricane.git
@@ -102,7 +102,7 @@ Note that the last line of the console output is the mean loss: this is because 
 the CLI utility to return the expected mean economic loss.
 
 
-> **Note:**  the `validated parameters` printed in the console/log show the values of the parameters after validation (type- and value-checking), and transformation, if necessary.
+> **Note:**  the `validated parameters` printed in the console/log show the values of the parameters _after_ validation (type- and value-checking), and transformation, if necessary.
 
 > **Note:**  `florida_mean` and `gulf_mean` printed in the console/log are the natural log of the values 
 passed in input by the user: the transformation ensures that the expected value of the lognormal distribution
@@ -140,20 +140,18 @@ The numerical `.x` suffix (e.g., `.1`, `.2`, ...) in the log filenames allows fo
 of large volume.
 
 ## Testing
-Testing uses `pytest` and is performed automatically with GitHub Actions on every push on any branch.
-
-Note that GitHub Actions is free for an unlimited amount of compute-minutes for open source projects.
+Testing uses `pytest` and is performed automatically with GitHub Actions on every push on any branch (GitHub Actions are free for an unlimited amount of compute-minutes for open source projects).
 
 I implemented three tests, with a matrix of parametrizations:
 
 | test name                          | test description                                            |
 | ---------------------------------- | ----------------------------------------------------------- |
-| `test_simulators_accuracy`           | Test if the different simulators return mean losses that agree within a relative tolerance `rtol` and an absolute tolerance `atol`. |
-| `test_simulator_selection`           | Test exceptions if the chosen simulator_id doesn't exist.    |
-| `test_input_parameter_values`        | Test exceptions if input data has forbidden values.         |
+| `test_simulators_accuracy`           | Test if the different simulators return mean losses that agree within a relative tolerance `rtol` and an absolute tolerance `atol`. To have relatively quick checks, right now the threshold accuracy is set to 1%, but it can be made smaller (i.e., a tighter constraint), at the cost of longer CI tests. |
+| `test_simulator_selection`           | Test that exceptions are raised if the chosen `simulator_id` doesn't exist.    |
+| `test_input_parameter_values`        | Test that exceptions are raised if input data has forbidden values.         |
 
 All the three tests use `pytest.mark.parametrize`, which allows repeating the same test with different
-input parameters, handy to test the validity of a test under different scenarios.
+input parameters.
 
 To keep the tests reproducible, I fix the random seed to the `SEED` defined in `tests.py`.
 
@@ -167,14 +165,6 @@ Additional tests that it would be easy to implement:
 
 - additional convergence checks for different regimes of the input parameters.
 
-## Accuracy checks
-Accuracy is checked in the tests.
-
-In particular, `test_simulators_accuracy` checks that all the implementations of the hurricane loss model return mean loss
-values within a given accuracy, for 3 different sets of input parameters. 
-
-To have relatively quick checks, the threshold accuracy is now set to 1%, but it can be
-made smaller (i.e. tighter constraint), at the cost of longer CI tests.
 
 ## Performance
 In order to test the performance of the implemented simulators I adopt a Factory design patter for the
@@ -278,11 +268,11 @@ To quantify the performance of the different implementations I wrote a bash scri
 to compute the execution times of all the simulators, each of them for a range of `num_monte_carlo_samples`
 between 10 and 10 millions.
 
-All the execution times are in the `benchmark/timings/` folder, e.g. `timings_s0.txt` for `simulator_id=0` (`python`).
+All the execution times are in the [`benchmark/timings/`](benchmark/timings/) folder, e.g. `timings_s0.txt` for `simulator_id=0` (`python`).
 
 For reference, all the timings were performed on an Apple Macbook Pro (13-inch 2019) with a 2.4 GHz Intel Core i5 and 16 GB 2133 MHz LPDDR3 of RAM.
 
-In this plot I present the scaling as a function of `num_monte_carlo_samples`:
+In this plot I present the scaling of the execution time (in milliseconds) as a function of `num_monte_carlo_samples`:
 <p align="center">
    <img width = "600" src="benchmark/execution_time_vs_num_monte_carlo_samples.png"/>		 
  </p>
@@ -291,11 +281,12 @@ In this plot I present the scaling as a function of `num_monte_carlo_samples`:
 
 - the scaling is pretty much linear (cf. reference dashed line) for all the implementations.
 - the pure `python` implementation is, as expected, the least efficient.
-- the `numba.jit` compilation achieves a 75x speed-up when applied to the `python` implementation (`jit`), roughly the same speed-up achieved by implementations with no explicit loops (`jit-noloops`).
-- using only numpy functions with no explicit loops achieves a very good acceleration as well (75x w.r.t. `python`),
+- by just adding a `numba.jit` decorator (`jit` implementation) to the `python` implementation achieves a 75x speed-up, roughly in line with the speedup achieved by implementations with no explicit loops (`jit-noloops`).
+- using vectorized numpy functions with no explicit loops (`python-noloops` implementation) achieves a very good acceleration as well (75x w.r.t. `python`),
   without the need of `numba.jit`.
 - `numba.jit` with `parallel` option is further 5.7x faster than the `jit` version. Overall, the `jit-parallel` 
   version is 390x faster than pure `python`.
+- enabling `fastmath`, releasing the GIL (`nogil=True`), and explicitly declaring the function signature in the `@njit()` call does not produce a definite or substantial speedup over the `jit-parallel` implementation.
 
 The following plot shows the speedups over the `python` implementation:
 <p align="center">
