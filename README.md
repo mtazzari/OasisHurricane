@@ -1,7 +1,7 @@
 # oasishurricane
 
 [![image](https://github.com/mtazzari/oasishurricane/actions/workflows/tests.yml/badge.svg)](https://github.com/mtazzari/oasishurricane/actions/workflows/tests.yml)
-[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)]
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://github.com/mtazzari/OasisHurricane/blob/main/LICENSE)
 
 A Python command-line utility for Linux that computes the economic loss for hurricanes in Florida and in the Gulf states
 
@@ -193,6 +193,7 @@ where `validated_parameters` are the CLI input parameters after validation.
 
 This architecture allows for a modular and quick replacement of the core MC model. 
 
+### Timing the functions
 To properly evaluate the performance of the simulators I defined an ad-hoc decorator `oasishurricane.utils.timer` 
 which:
 
@@ -212,7 +213,7 @@ Additional parameters to customize the timing functionality are:
                    for large `num_monte_carlo_samples` it might be handy to reduce it. If not set, `cycles=3`.
 - `TIMEIT_LOGFILE`: the filename of the log where to store the timings. If not set, it prints to the console log. 
 
-### Examples
+### Example
 With this setup:
 ```bash
 export TIMEIT=1
@@ -273,7 +274,7 @@ unset TIMEIT
 ```
 
 ### Results
-To quantify the performance of the different implementations I wrote a simple bash script (benchmark/benchmark.sh)
+To quantify the performance of the different implementations I wrote a bash script ([benchmark.sh](benchmark/benchmark.sh))
 to compute the execution times of all the simulators, each of them for a range of `num_monte_carlo_samples`
 between 10 and 10 millions.
 
@@ -283,7 +284,7 @@ For reference, all the timings were performed on an Apple Macbook Pro (13-inch 2
 
 In this plot I present the scaling as a function of `num_monte_carlo_samples`:
 <p align="center">
-   <img width = "600" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/execution_time_vs_num_monte_carlo_samples.png?raw=true"/>		 
+   <img width = "600" src="benchmark/execution_time_vs_num_monte_carlo_samples.png"/>		 
  </p>
 
 **Comments:**
@@ -298,12 +299,12 @@ In this plot I present the scaling as a function of `num_monte_carlo_samples`:
 
 The following plot shows the speedups over the `python` implementation:
 <p align="center">
-   <img width = "600" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/speedup_vs_num_monte_carlo_samples.png?raw=true"/>		 
+   <img width = "600" src="benchmark/speedup_vs_num_monte_carlo_samples.png"/>		 
  </p>
 
 In the following figure I show the convergence of the mean economic losses for increasing `num_monte_carlo_samples`.
 <p align="center">
-   <img width = "600" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/mean_loss_vs_num_monte_carlo_samples.png?raw=true"/>		 
+   <img width = "600" src="benchmark/mean_loss_vs_num_monte_carlo_samples.png"/>		 
  </p>
  
 Comments:
@@ -312,6 +313,7 @@ Comments:
   same expected value (dashed line at mean loss=50 $B).
 - the pure `python` implementation is slightly slower in converging than the others.
 
+> The plots shown in this README are done in this [Jupyter notebook](benchmark/plot_timing_results.ipynb).
 ## Author
 
 - [Marco Tazzari](https://github.com/mtazzari)
