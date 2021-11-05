@@ -48,22 +48,24 @@ optional arguments:
                         2: jit-parallel
                         3: jit-noloops
                         4: python-noloops
+                        5: jit-parallel-fastmath
 ```
 The positional parameters are required for execution. 
 
-The utility has **5 different implementations** of the proposed Monte Carlo hurricane losses model, which can be selected 
+The utility has **6 different implementations** of the proposed Monte Carlo hurricane losses model, which can be selected 
 with the `-s` or `--simulator` option by providing the `id` of the simulator. The implementations achieve different levels
 of acceleration w.r.t. the baseline pure-`python` implementation.
 
 The implementations are:
 
-| ID  | Simulator          | Description |
-| --- | ------------------ | ----------- |
-| 0   | `python`           | a pure Python implementation of the algorithm outlined in the test sheet. Used as a reference for accuracy and performance benchmarks.       |
-| 1   | `jit`              | the same algorithm as in `python`, with `numba` just-in-time compilation   |
-| 2   | `jit-parallel`     | the same algorithm as in `python`, with `numba` just-in-time compilation **and** `numba` automatic         |
-| 3   | `jit-noloops`      | a `numpy`-only algorithm with **no explicit loops**, with `numba` just-in-time compilation   |
-| 4   | `python-noloops`   | a pure Python`numpy`-only algorithm with **no explicit loops**          |
+| ID  | Simulator                 | Description |
+| --- | ------------------------- | ----------- |
+| 0   | `python`                  | a pure Python implementation of the algorithm outlined in the test sheet. Used as a reference for accuracy and performance benchmarks.       |
+| 1   | `jit`                     | the same algorithm as in `python`, with `numba` just-in-time compilation   |
+| 2   | `jit-parallel`            | the same algorithm as in `python`, with `numba` just-in-time compilation **and** `numba` automatic         |
+| 3   | `jit-noloops`             | a `numpy`-only algorithm with **no explicit loops**, with `numba` just-in-time compilation   |
+| 4   | `python-noloops`          | a pure Python`numpy`-only algorithm with **no explicit loops**          |
+| 5   | `jit-parallel-fastmath`   | the same algorithm as in `jit-parallel`, with additional `fastmath` enabled, GIL released, and the declaration of data types  |
 
 ## Examples
 Let us run a series of examples in which the losses are highly peaked around the
@@ -168,8 +170,8 @@ Additional tests that it would be easy to implement:
 ## Accuracy checks
 Accuracy is checked in the tests.
 
-In particular, `test_simulators_accuracy` checks that the 5 implementations of the hurricane loss model return mean loss
-values within a given accuracy, for 3 sets of input parameters. 
+In particular, `test_simulators_accuracy` checks that all the implementations of the hurricane loss model return mean loss
+values within a given accuracy, for 3 different sets of input parameters. 
 
 To have relatively quick checks, the threshold accuracy is now set to 1%, but it can be
 made smaller (i.e. tighter constraint), at the cost of longer CI tests.
@@ -272,7 +274,7 @@ unset TIMEIT
 
 ### Results
 To quantify the performance of the different implementations I wrote a simple bash script (benchmark/benchmark.sh)
-to compute the execution time for all the 5 simulators, each of them for a range of `num_monte_carlo_samples`
+to compute the execution times of all the simulators, each of them for a range of `num_monte_carlo_samples`
 between 10 and 10 millions.
 
 All the execution times are in the `benchmark/timings/` folder, e.g. `timings_s0.txt` for `simulator_id=0` (`python`).
@@ -292,6 +294,11 @@ In this plot I present the scaling as a function of `num_monte_carlo_samples`:
   without the need of `numba.jit`.
 - `numba.jit` with `parallel` option is further 5.7x faster than the `jit` version. Overall, the `jit-parallel` 
   version is 390x faster than pure `python`.
+
+Speedups are clear in the following plot:
+<p align="center">
+   <img width = "600" src="https://github.com/mtazzari/OasisHurricane/blob/readme/benchmark/speedup_vs_num_monte_carlo_samples.png?raw=true"/>		 
+ </p>
 
 In the following figure I show the convergence of the mean economic losses for increasing `num_monte_carlo_samples`.
 
