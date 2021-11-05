@@ -1,7 +1,7 @@
 # oasishurricane
 
 [![image](https://github.com/mtazzari/oasishurricane/actions/workflows/tests.yml/badge.svg)](https://github.com/mtazzari/oasishurricane/actions/workflows/tests.yml)
-[![image](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)]
 
 A Python command-line utility for Linux that computes the economic loss for hurricanes in Florida and in the Gulf states
 
